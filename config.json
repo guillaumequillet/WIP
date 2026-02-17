@@ -1,0 +1,13 @@
+{
+    "window": {
+        "title": "test !",
+        "width": 640,
+        "height": 480,
+        "fullscreen": false,
+        "mouse_cursor": true
+    },
+
+    "keys": {
+        "exit": ["Gosu::KB_ESCAPE"]
+    }
+}
