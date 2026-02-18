@@ -1,80 +1,72 @@
-import bpy
-import json
-import os
-import mathutils
+import bpy, json, os, mathutils
 
 # --- CONFIGURATION ---
-FILE_PATH = "E:/PROG/RUBY/WIP/scenes/scenes_data.json"
-RENDER_PATH = "E:/PROG/RUBY/WIP/scenes"
+base_dir = "E:/PROG/RUBY/WIP/scenes/"
+output_json = os.path.join(base_dir, "scenes_data.json")
 
-data = {
-    "cameras": {},
-    "zones": []
-}
-
-def clean_val(val):
-    return round(float(val), 2)
-
-# 1. RÉGLAGES DU RENDU (FOND NOIR OPAQUE)
+data = {"cameras": {}, "zones": [], "collisions": []}
 scene = bpy.context.scene
-scene.render.film_transparent = False  # Désactive la transparence (Alpha)
-scene.render.image_settings.color_mode = 'RGB' # Force l'absence d'alpha
 
-# Réglage de la couleur du monde en noir
-if scene.world:
-    scene.world.use_nodes = True
-    nodes = scene.world.node_tree.nodes
-    bg_node = nodes.get("Background")
-    if bg_node:
-        bg_node.inputs[0].default_value = (0, 0, 0, 1) # Noir (R, G, B, A)
+print("\n" + "="*30)
+print("DÉBUT DU RENDU ET EXPORT")
 
-# 2. EXPORT DES CAMÉRAS
+# 1. MASQUAGE DES OBJETS TECHNIQUES AU RENDU
 for obj in bpy.data.objects:
-    if obj.type == 'CAMERA':
-        mw = obj.matrix_world
-        pos = mw.to_translation()
-        forward = mathutils.Vector((0, 0, -1))
-        target = mw @ forward
+    if obj.name.startswith("Trigger") or "collision" in obj.name.lower():
+        obj.hide_render = True 
+
+# 2. PARCOURS ET RENDU
+for obj in bpy.data.objects:
+    # --- RENDU ET DONNÉES CAMÉRAS ---
+    if obj.type == 'CAMERA' and "TargetCam" in obj.name:
+        scene.camera = obj
+        img_name = obj.name + ".png"
+        scene.render.filepath = os.path.join(base_dir, img_name)
+        
+        print(f"-> Rendu de {img_name}...")
+        # CETTE LIGNE EST MAINTENANT ACTIVE :
+        bpy.ops.render.render(write_still=True) 
+        
+        loc = obj.location
+        rot = obj.matrix_world.to_quaternion()
+        target = loc + (rot @ mathutils.Vector((0.0, 0.0, -1.0)))
         
         data["cameras"][obj.name] = {
-            "pos": [clean_val(pos.x), clean_val(pos.y), clean_val(pos.z)],
-            "look_at": [clean_val(target.x), clean_val(target.y), clean_val(target.z)],
-            "fov": clean_val(bpy.data.cameras[obj.data.name].angle * 57.2958)
+            "pos": [round(loc.x, 2), round(loc.y, 2), round(loc.z, 2)],
+            "look_at": [round(target.x, 2), round(target.y, 2), round(target.z, 2)],
+            "fov": round((obj.data.angle * 180) / 3.14159, 2)
         }
+    
+    # --- EXPORT COLLISIONS (Faces individuelles pour ton "L") ---
+    if "collision" in obj.name.lower() and obj.type == 'MESH':
+        mesh, matrix = obj.data, obj.matrix_world
+        for face in mesh.polygons:
+            verts = [matrix @ mesh.vertices[v].co for v in face.vertices]
+            xs, ys = [v.x for v in verts], [v.y for v in verts]
+            data["collisions"].append({
+                "x_min": round(min(xs), 2), "x_max": round(max(xs), 2),
+                "y_min": round(min(ys), 2), "y_max": round(max(ys), 2)
+            })
 
-# 3. EXPORT DES ZONES (Triggers)
-for obj in bpy.data.objects:
-    if obj.name.startswith("Trigger_"):
-        cam_id = obj.name.replace("Trigger_", "")
-        mw = obj.matrix_world
-        world_corners = [mw @ mathutils.Vector(corner) for corner in obj.bound_box]
-        x_coords = [v.x for v in world_corners]
-        y_coords = [v.y for v in world_corners]
+    # --- EXPORT TRIGGERS (Auto-lien via le nom) ---
+    if obj.name.startswith("Trigger") and obj.type == 'MESH':
+        # On enlève "Trigger_" pour trouver le nom de la caméra
+        target_cam = obj.name.replace("Trigger_", "")
+        
+        box = [obj.matrix_world @ mathutils.Vector(c) for c in obj.bound_box]
+        xs, ys = [v.x for v in box], [v.y for v in box]
         
         data["zones"].append({
-            "cam_id": cam_id,
-            "x_min": clean_val(min(x_coords)),
-            "x_max": clean_val(max(x_coords)),
-            "y_min": clean_val(min(y_coords)),
-            "y_max": clean_val(max(y_coords))
+            "cam_id": target_cam,
+            "x_min": round(min(xs), 2), "x_max": round(max(xs), 2),
+            "y_min": round(min(ys), 2), "y_max": round(max(ys), 2)
         })
+        print(f"Trigger lié : {obj.name} -> {target_cam}")
 
-# 4. SAUVEGARDE DU JSON
-with open(FILE_PATH, 'w') as f:
+# 3. SAUVEGARDE JSON
+os.makedirs(base_dir, exist_ok=True)
+with open(output_json, 'w') as f:
     json.dump(data, f, indent=4)
 
-# 5. RENDU DES IMAGES
-for cam_name in data["cameras"]:
-    cam_obj = bpy.data.objects[cam_name]
-    scene.camera = cam_obj
-    scene.render.filepath = os.path.join(RENDER_PATH, cam_name + ".png")
-    
-    # On cache les triggers pour le rendu
-    for obj in bpy.data.objects:
-        if obj.name.startswith("Trigger_"):
-            obj.hide_render = True
-            
-    bpy.ops.render.render(write_still=True)
-    print(f"Rendu terminé : {cam_name}.png (Fond Noir)")
-
-print("Export et Rendus terminés.")
+print(f"SUCCÈS : {len(data['cameras'])} PNG créés et JSON mis à jour.")
+print("="*30)
