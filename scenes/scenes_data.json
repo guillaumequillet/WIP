@@ -45,8 +45,8 @@
             "cam_id": "TargetCam",
             "x_min": 39.87,
             "x_max": 88.53,
-            "y_min": 11.57,
-            "y_max": 26.37
+            "y_min": 13.67,
+            "y_max": 36.35
         },
         {
             "cam_id": "TargetCam.001",
@@ -59,8 +59,8 @@
             "cam_id": "TargetCam.002",
             "x_min": 73.22,
             "x_max": 88.57,
-            "y_min": 26.76,
-            "y_max": 108.73
+            "y_min": 35.59,
+            "y_max": 88.78
         }
     ],
     "collisions": [

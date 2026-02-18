@@ -45,11 +45,13 @@ class TriggerZone
 end
 
 class Camera
-  attr_reader :id, :pos, :look_at, :fov, :image, :yaw
+  attr_reader :id, :pos, :look_at, :fov, :image, :image_foreground, :yaw
   def initialize(id, data, base_path)
     @id, @pos, @look_at, @fov = id, data["pos"], data["look_at"], data["fov"]
     img_path = File.join(base_path, "scenes", "#{id}.png")
+    img_path_foreground = File.join(base_path, "scenes", "#{id}_foreground.png")
     @image = Gosu::Image.new(img_path, retro: true) if File.exist?(img_path)
+    @image_foreground = Gosu::Image.new(img_path_foreground, retro: true) if File.exist?(img_path_foreground)
     # Angle horizontal de la caméra
     @yaw = Math.atan2(@look_at[1] - @pos[1], @look_at[0] - @pos[0])
   end
@@ -154,6 +156,7 @@ class Prototype < Gosu::Window
 
   def update
     @jill.update(@cameras[@idx], @collisions)
+    self.caption = "#{@jill.x},#{@jill.y}"
     
     # ANTI-CLIGNOTEMENT DES CAMÉRAS
     all_active = @zones.select { |z| z.inside?(@jill.x, @jill.y, Config::JILL_RADIUS) }
@@ -168,15 +171,20 @@ class Prototype < Gosu::Window
   end
 
   def draw
+    # background
     c = @cameras[@idx]
     c.image&.draw(0, 0, 0, width.to_f/c.image.width, height.to_f/c.image.height)
     
+    # 3d elements
     Gosu.gl(10) do
       glClear(GL_DEPTH_BUFFER_BIT); glEnable(GL_DEPTH_TEST)
       c.apply_view(self)
       @jill.draw(c)
       if @debug; glDisable(GL_TEXTURE_2D); @collisions.each(&:draw_debug); @zones.each(&:draw_debug); end
     end
+
+    # draw foreground
+    c.image_foreground&.draw(0, 0, 100, width.to_f/c.image.width, height.to_f/c.image.height) if @jill.y > 26
   end
 
   def button_down(id)
