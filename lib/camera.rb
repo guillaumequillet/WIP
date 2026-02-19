@@ -1,5 +1,5 @@
 class Camera
-    attr_reader :debug_color
+    attr_reader :debug_color, :x, :y, :z
     def initialize(bg_filename, window, x, y, z, t_x, t_y, t_z, fovy)
         @window = window
         @fovy = fovy
@@ -13,8 +13,8 @@ class Camera
         @background.draw(0, 0, 0)
     end
 
-    def angle_from_sprite(sprite_x, sprite_y)
-        angle_rad = Math.atan2(@x - sprite_x, @y - sprite_y)
+    def angle_from_sprite(player_x, player_y)
+        angle_rad = Math.atan2(@y - player_y, @x - player_x)
         angle_deg = angle_rad * 180.0 / Math::PI + 90.0
         return angle_deg
     end
@@ -29,7 +29,7 @@ class Camera
         
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity
-        gluPerspective(@fovy, @window.width.to_f / @window.height, 0.1, 2000.0)
+        gluPerspective(@fovy, @window.width.to_f / @window.height, 0.01, 2000.0)
         
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity

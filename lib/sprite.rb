@@ -4,17 +4,28 @@ class Sprite
     attr_accessor :x, :y, :z
 
     def initialize(filename, x, y, z, scale)
-        @texture = Gosu::Image.load_tiles(filename, FRAME_SIZE, FRAME_SIZE, retro: true)
+        @frames = Gosu::Image.load_tiles(filename, FRAME_SIZE, FRAME_SIZE, retro: true)
+
+        @frames.each do |frame|
+            glBindTexture(GL_TEXTURE_2D, frame.gl_tex_info.tex_name)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        end
+
         @x, @y, @z = x, y, z
         @scale = scale
     end
 
     def draw(billboard_angle = 0.0)
-        frame = @texture.first # temp
+        frame = @frames.first # temp
         tex = frame.gl_tex_info
+        glColor3f(1, 1, 1)
+        glBindTexture(GL_TEXTURE_2D, tex.tex_name)
 
+        glEnable(GL_TEXTURE_2D)
         glEnable(GL_ALPHA_TEST)
         glAlphaFunc(GL_GREATER, 0)
+        glDisable(GL_CULL_FACE)
         glPushMatrix
         glTranslatef(@x, @y, @z)
         glScalef(@scale, @scale, @scale)

@@ -106,16 +106,18 @@ class GameScene < Scene
 
     def update(dt)
         super(dt)
-        @hero.update(dt)
+        @hero.update(dt, @cameras[@active_camera])
+
+        @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x}, #{@hero.sprite.y}, #{@hero.sprite.z}"
     end
 
     def draw
         super
         camera = @cameras[@active_camera] 
         camera.draw_background
-        Gosu.gl do
+        Gosu.gl(1) do
             camera.opengl_setup
-            @hero.draw(@cameras[@active_camera])
+            @hero.draw
             if @debug
                 draw_debug_tiles
                 draw_gizmo
