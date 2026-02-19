@@ -14,9 +14,7 @@ class Camera
     end
 
     def angle_from_sprite(sprite_x, sprite_y)
-        dx = @x - sprite_x
-        dy = @y - sprite_y
-        angle_rad = Math.atan2(dy, dx)
+        angle_rad = Math.atan2(@x - sprite_x, @y - sprite_y)
         angle_deg = angle_rad * 180.0 / Math::PI + 90.0
         return angle_deg
     end
