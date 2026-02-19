@@ -1,23 +1,28 @@
 class Camera
-    attr_reader :x, :y, :window, :height
-    def initialize(window, target)
+    attr_reader :debug_color
+    def initialize(bg_filename, window, x, y, z, t_x, t_y, t_z, fovy)
         @window = window
-        @target = target
-        @x, @y = @target.x, @target.y
-        @height = 96
-        @offset_x = 96
+        @fovy = fovy
+        @x, @y, @z = x, y, z
+        @t_x, @t_y, @t_z = t_x, t_y, t_z
+        @background = Gosu::Image.new(bg_filename, retro: true)
+        @debug_color = Gosu::Color.new(255, Gosu.random(0, 255).floor, Gosu.random(0, 255).floor, Gosu.random(0, 255).floor)
     end
 
-    def update(dt)
-        target_x = @target.x - @window.width / 2 + @offset_x
-        target_y = @target.y - @window.height + @height
-        @x = lerp(@x, target_x, 0.1)
-        @y = target_y
+    def draw_background
+        @background.draw(0, 0, 0)
     end
 
-    def look
-        Gosu.translate(-@x, -@y) do
-            yield
-        end
+    def opengl_setup
+        width = @window.fullscreen? ? Gosu.screen_width : @window.width
+        height = @window.fullscreen? ? Gosu.screen_height : @window.height
+        
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity
+        gluPerspective(@fovy, @window.width.to_f / @window.height, 0.1, 2000.0)
+        
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity
+        gluLookAt(@x, @y, @z, @t_x, @t_y, @t_z, 0, 0, 1)
     end
 end

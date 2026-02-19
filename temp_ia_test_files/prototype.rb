@@ -56,7 +56,9 @@ class Camera
     @yaw = Math.atan2(@look_at[1] - @pos[1], @look_at[0] - @pos[0])
   end
   def apply_view(window)
-    glMatrixMode(GL_PROJECTION); glLoadIdentity; gluPerspective(@fov, window.width.to_f/window.height, 0.1, 2000.0)
+    width = window.fullscreen? ? Gosu.screen_width : window.width
+    height = window.fullscreen? ? Gosu.screen_height : window.height
+    glMatrixMode(GL_PROJECTION); glLoadIdentity; gluPerspective(@fov, width.to_f/height, 0.1, 2000.0)
     glMatrixMode(GL_MODELVIEW); glLoadIdentity; gluLookAt(@pos[0], @pos[1], @pos[2], @look_at[0], @look_at[1], @look_at[2], 0, 0, 1)
   end
 end
@@ -188,6 +190,7 @@ class Prototype < Gosu::Window
   end
 
   def button_down(id)
+    super
     @debug = !@debug if id == Gosu::KB_D
     close if id == Gosu::KB_ESCAPE
   end

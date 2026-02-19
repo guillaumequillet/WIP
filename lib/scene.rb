@@ -17,50 +17,100 @@ class Scene
 end
 
 class GameScene < Scene
-    def button_down(id)
-        super(id)
-        shake_screen(10) if id == Gosu::KB_SPACE
+    def initialize(window, dirname)
+        super(window)
+        load_map(dirname)
+    end
+
+    def load_map(dirname)
+        data = JSON.parse(File.read("scenes/#{dirname}/scene_data.json"))
+        
+        @grid = {}
+        @cameras = {}
+
+        data['grid'].each do |line|
+            x, y, cam = *line
+            @grid[[x, y]] = cam
+        end
+
+        data['cameras'].each do |line|
+            name = line[0]
+            filename = "scenes/#{dirname}/#{name}.png"
+            @cameras[name] = Camera.new(filename, @window, *(line.drop(1)))
+        end
+        
+        @active_camera = @cameras.keys.first
     end
     
-    def shake_screen(intensity)
-        @shake_intensity = intensity
+    def get_active_camera(tile_x, tile_y)
+        if @grid.has_key?([tile_x, tile_y])
+            @active_camera = @grid[[tile_x, tile_y]]
+        else
+            raise("Error : no camera found for position [#{x}, #{y}]")
+        end
     end
 
-    def check_for_shaking
-        @shake_intensity ||= 0 
+    def next_camera
+        new_active_camera_index = @cameras.keys.index(@active_camera) + 1
+        new_active_camera_index = 0 if new_active_camera_index > @cameras.keys.size - 1
+        @active_camera = @cameras.keys[new_active_camera_index]
+    end
 
-        if @shake_intensity > 0
-            @shake_intensity *= 0.9
-            if @shake_intensity < 0.1
-                @shake_intensity = 0
-                @shake_offset_x, @shake_offset_y = 0, 0
-            else
-                @shake_offset_x = Gosu.random(-@shake_intensity, @shake_intensity)
-                @shake_offset_y = Gosu.random(-@shake_intensity, @shake_intensity)
-            end
-        else
-            @shake_offset_x, @shake_offset_y = 0, 0
+    def draw_debug_tiles
+        glDisable(GL_TEXTURE_2D)
+        glBegin(GL_QUADS)
+        @grid.each do |coords, camera_name|
+            camera = @cameras[camera_name]
+            glColor3ub(camera.debug_color.red, camera.debug_color.green, camera.debug_color.blue)
+            x, y, z = coords[0], coords[1], 0
+            glVertex3f(x, y, z)
+            glVertex3f(x, y + 1, z)
+            glVertex3f(x + 1, y + 1, z)
+            glVertex3f(x + 1, y, z)
         end
+        glEnd
+        glEnable(GL_TEXTURE_2D)
+    end
+
+    def draw_gizmo
+        glDisable(GL_TEXTURE_2D)
+        glPushMatrix
+        glScalef(1, 1, 1)
+        glBegin(GL_LINES)
+            # X axis
+            glColor3f(1, 0, 0)
+            glVertex3f(0, 0, 0)
+            glVertex3f(1, 0, 0)
+            # Y axis
+            glColor3f(0, 1, 0)
+            glVertex3f(0, 0, 0)
+            glVertex3f(0, 1, 0)
+            # Z axis
+            glColor3f(0, 0, 1)
+            glVertex3f(0, 0, 0)
+            glVertex3f(0, 0, 1)
+        glEnd
+        glPopMatrix
+        glEnable(GL_TEXTURE_2D)
+    end
+
+    def button_down(id)
+        super(id)
+        next_camera if id == Gosu::KB_SPACE
     end
 
     def update(dt)
         super(dt)
-        check_for_shaking
-    end
-
-    def draw_scene
-        @bg ||= Gosu::Image.new('gfx/bg.png', retro: true)
-        @bg.draw(0, 0, 0)
-    end
-
-    def draw_hud
-
     end
 
     def draw
-        Gosu.translate(@shake_offset_x, @shake_offset_y) do
-           draw_scene 
+        super
+        camera = @cameras[@active_camera] 
+        camera.draw_background
+        Gosu.gl do
+            camera.opengl_setup
+            draw_debug_tiles
+            draw_gizmo
         end
-        draw_hud 
     end
 end
