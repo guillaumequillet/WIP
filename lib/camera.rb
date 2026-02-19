@@ -1,5 +1,5 @@
 class Camera
-    attr_reader :debug_color, :x, :y, :z
+    attr_reader :debug_color, :x, :y, :z, :yaw
     def initialize(bg_filename, window, x, y, z, t_x, t_y, t_z, fovy)
         @window = window
         @fovy = fovy
@@ -7,6 +7,7 @@ class Camera
         @t_x, @t_y, @t_z = t_x, t_y, t_z
         @background = Gosu::Image.new(bg_filename, retro: true)
         @debug_color = Gosu::Color.new(255, Gosu.random(0, 255).floor, Gosu.random(0, 255).floor, Gosu.random(0, 255).floor)
+        @yaw = Math.atan2(@t_y - @y, @t_x - @x)
     end
 
     def draw_background
@@ -14,7 +15,7 @@ class Camera
     end
 
     def angle_from_sprite(player_x, player_y)
-        angle_rad = Math.atan2(@y - player_y, @x - player_x)
+        angle_rad = Math.atan2(player_y - @y, player_x - @x)
         angle_deg = angle_rad * 180.0 / Math::PI + 90.0
         return angle_deg
     end
