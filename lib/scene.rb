@@ -20,6 +20,8 @@ class GameScene < Scene
     def initialize(window, dirname)
         super(window)
         load_map(dirname)
+        @debug = false
+        @hero = Hero.new('gfx/jill.png', 1, 1)
     end
 
     def load_map(dirname)
@@ -73,9 +75,11 @@ class GameScene < Scene
     end
 
     def draw_gizmo
+        size, width = 3.0, 3.0
         glDisable(GL_TEXTURE_2D)
         glPushMatrix
-        glScalef(1, 1, 1)
+        glScalef(size, size, size)
+        glLineWidth(width)
         glBegin(GL_LINES)
             # X axis
             glColor3f(1, 0, 0)
@@ -96,11 +100,13 @@ class GameScene < Scene
 
     def button_down(id)
         super(id)
+        @debug = !@debug if id == Gosu::KB_D
         next_camera if id == Gosu::KB_SPACE
     end
 
     def update(dt)
         super(dt)
+        @hero.update(dt)
     end
 
     def draw
@@ -109,8 +115,11 @@ class GameScene < Scene
         camera.draw_background
         Gosu.gl do
             camera.opengl_setup
-            draw_debug_tiles
-            draw_gizmo
+            @hero.draw(@cameras[@active_camera])
+            if @debug
+                draw_debug_tiles
+                draw_gizmo
+            end
         end
     end
 end
