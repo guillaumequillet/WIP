@@ -17,7 +17,7 @@ class Scene
 end
 
 class GameScene < Scene
-    attr_reader :grid
+    attr_reader :grid, :blocks
     def initialize(window, dirname)
         super(window)
         load_map(dirname)
@@ -43,6 +43,9 @@ class GameScene < Scene
                 when Gosu::Color::GREEN then 'CAM_02'
                 when Gosu::Color::BLUE then 'CAM_03'
                 end
+
+                y = @minimap.height - y # Y is inverted between Gosu and Blender
+
                 @grid[[x, y]] = camera unless camera.nil?
                 @blocks.push [x, y] if camera.nil?
             end
@@ -55,22 +58,17 @@ class GameScene < Scene
 
         data.each do |camera_name, infos|
             filename = "scenes/#{dirname}/#{camera_name}.png"
-            fovy = infos['fov']
-            coords = infos['pos']
-            target = infos['target']
-            @cameras[camera_name] = Camera.new(filename, @window, *coords, *target, fovy)
+            @cameras[camera_name] = Camera.new(filename, @window, infos['x'], infos['y'], infos['z'], infos['tx'], infos['ty'], infos['tz'], infos['fovy'])
         end
         
         @active_camera = @cameras.keys.first
     end
     
     def get_active_camera(tile_x, tile_y)
-        return @cameras.keys.first # temp
-
         if @grid.has_key?([tile_x, tile_y])
             @active_camera = @grid[[tile_x, tile_y]]
         else
-            raise("Error : no camera found for position [#{tile_x}, #{tile_y}]")
+            puts("Error : no camera found for position [#{tile_x}, #{tile_y}]")
         end
     end
 
@@ -120,6 +118,12 @@ class GameScene < Scene
         glEnable(GL_TEXTURE_2D)
     end
 
+    def draw_minimap
+        x, y, z = 10, 10, 10
+        @minimap.draw(x, y, z)
+        Gosu.draw_rect(@hero.sprite.x.floor + x, @minimap.height - @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
+    end
+
     def button_down(id)
         super(id)
         @debug = !@debug if id == Gosu::KB_D
@@ -131,7 +135,7 @@ class GameScene < Scene
         @hero.update(dt, @cameras[@active_camera])
         get_active_camera(@hero.sprite.x.floor, @hero.sprite.y.floor)
 
-        @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x}, #{@hero.sprite.y}, #{@hero.sprite.z}"
+        @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x.floor(2)}, #{@hero.sprite.y.floor(2)}, #{@hero.sprite.z.floor(2)}"
     end
 
     def draw
@@ -146,5 +150,6 @@ class GameScene < Scene
                 draw_gizmo
             end
         end
+        Gosu.scale(4, 4) { draw_minimap }        
     end
 end

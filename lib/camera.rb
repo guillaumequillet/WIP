@@ -11,7 +11,8 @@ class Camera
     end
 
     def draw_background
-        scale = @window.width.to_f / @background.width
+        width = @window.fullscreen? ? Gosu.screen_width : @window.width
+        scale = width.to_f / width
         @background.draw(0, 0, 0, scale, scale)
     end
 

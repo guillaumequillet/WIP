@@ -8,8 +8,12 @@ class Hero
     end
 
     def update(dt, camera)
+        old_x, old_y = @sprite.x, @sprite.y
+
         @angle = camera.angle_from_sprite(@sprite.x, @sprite.y)
         speed = @speed * dt
+
+        @angle = 0 # temp
 
         if Gosu.button_down?(Gosu::KB_UP)
             @sprite.x -= Gosu.offset_x(@angle, speed)
@@ -26,6 +30,11 @@ class Hero
         end
 
         @frame = 0
+
+        if @scene.blocks.include?([@sprite.x.floor, @sprite.y.floor])
+            @sprite.x = old_x
+            @sprite.y = old_y
+        end
     end
 
     def draw
