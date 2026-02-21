@@ -22,7 +22,7 @@ class GameScene < Scene
         super(window)
         load_map(dirname)
         @debug = false
-        @hero = Hero.new(self, 'gfx/jill.png', 16, 6)
+        @hero = Hero.new(self, 'gfx/jill.png', 14, 12)
     end
 
     def load_map(dirname)
@@ -44,7 +44,8 @@ class GameScene < Scene
                 when Gosu::Color::BLUE then 'CAM_03'
                 end
 
-                y = @minimap.height - y # Y is inverted between Gosu and Blender
+                # y = @minimap.height - y # Y is inverted between Gosu and Blender
+                # x = @minimap.width - y # X is inverted between Gosu and Blender
 
                 @grid[[x, y]] = camera unless camera.nil?
                 @blocks.push [x, y] if camera.nil?
@@ -121,7 +122,9 @@ class GameScene < Scene
     def draw_minimap
         x, y, z = 10, 10, 10
         @minimap.draw(x, y, z)
-        Gosu.draw_rect(@hero.sprite.x.floor + x, @minimap.height - @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
+        # Gosu.draw_rect(@hero.sprite.x.floor + x, @minimap.height - @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
+        # Gosu.draw_rect(@minimap.width - @hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
+        Gosu.draw_rect(@hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
     end
 
     def button_down(id)

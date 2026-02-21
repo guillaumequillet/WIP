@@ -17,7 +17,8 @@ class Camera
     end
 
     def angle_from_sprite(player_x, player_y)
-        angle_rad = Math.atan2(@y - player_y, @x - player_x)
+        return Gosu.angle(@x, @y, @t_x, @t_y)
+        angle_rad = Math.atan2(@y - player_y - @y, @x - player_x)
         angle_deg = angle_rad * 180.0 / Math::PI + 90.0
         return angle_deg
     end
