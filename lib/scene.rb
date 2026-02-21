@@ -21,7 +21,7 @@ class GameScene < Scene
         super(window)
         load_map(dirname)
         @debug = false
-        @hero = Hero.new('gfx/jill.png', 1, 1)
+        @hero = Hero.new('gfx/jill.png', 16, 6)
     end
 
     def load_map(dirname)

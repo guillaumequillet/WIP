@@ -16,8 +16,7 @@ class Sprite
         @scale = scale
     end
 
-    def draw(billboard_angle)
-        frame = 0 # temp
+    def draw(billboard_angle, frame)
         tex = @frames[frame].gl_tex_info
         glColor3f(1, 1, 1)
         glBindTexture(GL_TEXTURE_2D, tex.tex_name)
