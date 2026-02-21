@@ -3,41 +3,66 @@ class Hero
     def initialize(scene, spritesheet, x, y, z = 0)
         @scene = scene
         @sprite = Sprite.new(spritesheet, x, y, 0, 2)
-        @speed = 0.01
+        @speed = 0.05
         @angle = 0
+        @radius = 0.1
+        @walk, @rows = [1, 0, 1, 2], { dos: 0, droite: 1, face: 2, gauche: 3 }
+        generate_shadow
+    end
+
+    def generate_shadow
+        @shadow = Gosu.render(8, 8, retro: true) do
+            c = Gosu::Color.new(90, 0, 0, 0)
+            8.times { |py| 8.times { |px| Gosu.draw_rect(px, py, 1, 1, c) if Math.sqrt((px-4)**2 + (py-4)**2) <= 3.5 } }
+        end
     end
 
     def update(dt, camera)
-        old_x, old_y = @sprite.x, @sprite.y
+        l, r, u, d = Gosu.button_down?(Gosu::KB_LEFT), Gosu.button_down?(Gosu::KB_RIGHT), Gosu.button_down?(Gosu::KB_UP), Gosu.button_down?(Gosu::KB_DOWN)
 
-        @angle = camera.angle_from_sprite(@sprite.x, @sprite.y)
-        speed = @speed * dt
+        dx_screen = (r ? 1 : 0) - (l ? 1 : 0)
+        dy_screen = (u ? 1 : 0) - (d ? 1 : 0)
+        @moving = (dx_screen != 0 || dy_screen != 0)
 
-        @angle = 0 # temp
+        if @moving
+            input_angle = Math.atan2(dy_screen, dx_screen)
+            @angle = camera.yaw + input_angle - Math::PI / 2.0
+            mv_x = Math.cos(@angle) * @speed
+            mv_y = Math.sin(@angle) * @speed
 
-        if Gosu.button_down?(Gosu::KB_UP)
-            @sprite.x -= Gosu.offset_x(@angle, speed)
-            @sprite.y -= Gosu.offset_y(@angle, speed)
-        elsif Gosu.button_down?(Gosu::KB_DOWN)
-            @sprite.x += Gosu.offset_x(@angle, speed)
-            @sprite.y += Gosu.offset_y(@angle, speed)
-        elsif Gosu.button_down?(Gosu::KB_RIGHT)
-            @sprite.x -= Gosu.offset_x(@angle - 90, speed)
-            @sprite.y -= Gosu.offset_y(@angle - 90, speed)
-        elsif Gosu.button_down?(Gosu::KB_LEFT)
-            @sprite.x += Gosu.offset_x(@angle - 90, speed)
-            @sprite.y += Gosu.offset_y(@angle - 90, speed)
+            collisions = @scene.blocks
+            @sprite.x += mv_x unless collisions.any? { |b| hit?(b, @sprite.x + mv_x, @sprite.y, @radius) }
+            @sprite.y += mv_y unless collisions.any? { |b| hit?(b, @sprite.x, @sprite.y + mv_y, @radius) }
         end
 
-        @frame = 0
-
-        if @scene.blocks.include?([@sprite.x.floor, @sprite.y.floor])
-            @sprite.x = old_x
-            @sprite.y = old_y
-        end
+        rel = (@angle - camera.yaw + Math::PI) % (2 * Math::PI) - Math::PI
+        @dir = rel.abs < Math::PI * 0.25 ? :dos : (rel.abs > Math::PI * 0.75 ? :face : (rel > 0 ? :droite : :gauche))
     end
 
-    def draw
-        @sprite.draw(@angle, @frame)
+    def hit?(collision, px, py, r)
+        x_min, y_min = collision[0], collision[1]
+        x_max, y_max = x_min + 1, y_min + 1
+        (px + r > x_min && px - r < x_max) && (py + r > y_min && py - r < y_max) 
+    end
+
+    def draw_shadow
+        s_info = @shadow.gl_tex_info; return unless s_info
+        glEnable(GL_TEXTURE_2D); glBindTexture(GL_TEXTURE_2D, s_info.tex_name)
+        glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        s_sz = @sprite.scale * 0.15
+        glBegin(GL_QUADS)
+            glTexCoord2f(s_info.left, s_info.bottom); glVertex3f(-s_sz, -s_sz, 0.01)
+            glTexCoord2f(s_info.right, s_info.bottom); glVertex3f(s_sz, -s_sz, 0.01)
+            glTexCoord2f(s_info.right, s_info.top);    glVertex3f(s_sz, s_sz, 0.01)
+            glTexCoord2f(s_info.left, s_info.top);     glVertex3f(-s_sz, s_sz, 0.01)
+        glEnd
+        glDisable(GL_BLEND)
+    end
+
+    def draw(camera)
+        frame = @moving ? @walk[(Gosu.milliseconds / 150) % 4] : 1
+        tile = @rows[@dir] * 3 + frame
+        draw_shadow
+        @sprite.draw(camera.yaw, tile)
     end
 end

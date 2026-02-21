@@ -42,10 +42,10 @@ class GameScene < Scene
                 when Gosu::Color::RED then 'CAM_01'
                 when Gosu::Color::GREEN then 'CAM_02'
                 when Gosu::Color::BLUE then 'CAM_03'
+                when Gosu::Color.new(255, 255, 0, 255) then 'CAM_04'
                 end
 
-                # y = @minimap.height - y # Y is inverted between Gosu and Blender
-                # x = @minimap.width - y # X is inverted between Gosu and Blender
+                x = @minimap.width - x # X axis is inverted
 
                 @grid[[x, y]] = camera unless camera.nil?
                 @blocks.push [x, y] if camera.nil?
@@ -122,9 +122,7 @@ class GameScene < Scene
     def draw_minimap
         x, y, z = 10, 10, 10
         @minimap.draw(x, y, z)
-        # Gosu.draw_rect(@hero.sprite.x.floor + x, @minimap.height - @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
-        # Gosu.draw_rect(@minimap.width - @hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
-        Gosu.draw_rect(@hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
+        Gosu.draw_rect(@minimap.width - @hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
     end
 
     def button_down(id)
@@ -147,7 +145,7 @@ class GameScene < Scene
         camera.draw_background
         Gosu.gl(1) do
             camera.opengl_setup
-            @hero.draw
+            @hero.draw(@cameras[@active_camera])
             if @debug
                 draw_debug_tiles
                 draw_gizmo
