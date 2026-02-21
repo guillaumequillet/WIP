@@ -17,38 +17,60 @@ class Scene
 end
 
 class GameScene < Scene
+    attr_reader :grid
     def initialize(window, dirname)
         super(window)
         load_map(dirname)
         @debug = false
-        @hero = Hero.new('gfx/jill.png', 16, 6)
+        @hero = Hero.new(self, 'gfx/jill.png', 16, 6)
     end
 
     def load_map(dirname)
-        data = JSON.parse(File.read("scenes/#{dirname}/scene_data.json"))
-        
+        load_minimap(dirname)
+        load_json(dirname)
+    end
+    
+    def load_minimap(dirname)
         @grid = {}
+        @blocks = []
+        @minimap = Gosu::Image.new("scenes/#{dirname}/minimap.png", retro: true)
+
+        @minimap.width.times do |x|
+            @minimap.height.times do |y|
+                color = @minimap.get_pixel(x, y)
+                camera = case color
+                when Gosu::Color::RED then 'CAM_01'
+                when Gosu::Color::GREEN then 'CAM_02'
+                when Gosu::Color::BLUE then 'CAM_03'
+                end
+                @grid[[x, y]] = camera unless camera.nil?
+                @blocks.push [x, y] if camera.nil?
+            end
+        end
+    end
+
+    def load_json(dirname)
+        data = JSON.parse(File.read("scenes/#{dirname}/cameras_data.json"))
         @cameras = {}
 
-        data['grid'].each do |line|
-            x, y, cam = *line
-            @grid[[x, y]] = cam
-        end
-
-        data['cameras'].each do |line|
-            name = line[0]
-            filename = "scenes/#{dirname}/#{name}.png"
-            @cameras[name] = Camera.new(filename, @window, *(line.drop(1)))
+        data.each do |camera_name, infos|
+            filename = "scenes/#{dirname}/#{camera_name}.png"
+            fovy = infos['fov']
+            coords = infos['pos']
+            target = infos['target']
+            @cameras[camera_name] = Camera.new(filename, @window, *coords, *target, fovy)
         end
         
         @active_camera = @cameras.keys.first
     end
     
     def get_active_camera(tile_x, tile_y)
+        return @cameras.keys.first # temp
+
         if @grid.has_key?([tile_x, tile_y])
             @active_camera = @grid[[tile_x, tile_y]]
         else
-            raise("Error : no camera found for position [#{x}, #{y}]")
+            raise("Error : no camera found for position [#{tile_x}, #{tile_y}]")
         end
     end
 
@@ -107,6 +129,7 @@ class GameScene < Scene
     def update(dt)
         super(dt)
         @hero.update(dt, @cameras[@active_camera])
+        get_active_camera(@hero.sprite.x.floor, @hero.sprite.y.floor)
 
         @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x}, #{@hero.sprite.y}, #{@hero.sprite.z}"
     end
