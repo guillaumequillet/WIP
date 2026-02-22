@@ -6,7 +6,8 @@
         "y": 9.40,
         "z": 1.31,
         "offset_2d_x": 0,
-        "offset_2d_y": 0
+        "offset_2d_y": 0,
+        "opacity": 1.0
     },
     {
         "camera": "CAM_02",
@@ -15,7 +16,8 @@
         "y": 9.40,
         "z": 1.31,
         "offset_2d_x": 0,
-        "offset_2d_y": 0
+        "offset_2d_y": 0,
+        "opacity": 1.0
     },
     {
         "camera": "CAM_02",
@@ -24,7 +26,8 @@
         "y": 16.37,
         "z": 1.56,
         "offset_2d_x": 0,
-        "offset_2d_y": 350
+        "offset_2d_y": 350,
+        "opacity": 1.0
     },
     {
         "camera": "CAM_02",
@@ -33,7 +36,8 @@
         "y": 13.38,
         "z": 1.56,
         "offset_2d_x": 420,
-        "offset_2d_y": 350
+        "offset_2d_y": 350,
+        "opacity": 1.0
     },
     {
         "camera": "CAM_03",
@@ -42,7 +46,8 @@
         "y": 12.50,
         "z": 1.31,
         "offset_2d_x": 436,
-        "offset_2d_y": 145
+        "offset_2d_y": 145,
+        "opacity": 1.0
     },
     {
         "camera": "CAM_03",
@@ -51,7 +56,28 @@
         "y": 17.48,
         "z": 1.31,
         "offset_2d_x": 560,
-        "offset_2d_y": 0
+        "offset_2d_y": 0,
+        "opacity": 1.0
+    },
+    {
+        "camera": "CAM_04",
+        "image": "MASK_CAM_04_1.png",
+        "x": 23.59,
+        "y": 12.50,
+        "z": 1.31,
+        "offset_2d_x": 137,
+        "offset_2d_y": 123,
+        "opacity": 1.0
+    },
+    {
+        "camera": "CAM_04",
+        "image": "MASK_CAM_04_2.png",
+        "x": 23.59,
+        "y": 17.50,
+        "z": 1.31,
+        "offset_2d_x": 0,
+        "offset_2d_y": 0,
+        "opacity": 1.0
     },
     {
         "camera": "CAM_05",
@@ -60,7 +86,8 @@
         "y": 9.40,
         "z": 1.31,
         "offset_2d_x": 340,
-        "offset_2d_y": 0
+        "offset_2d_y": 0,
+        "opacity": 1.0
     },
     {
         "camera": "CAM_06",
@@ -69,6 +96,37 @@
         "y": 9.40,
         "z": 1.31,
         "offset_2d_x": 0,
-        "offset_2d_y": 0
+        "offset_2d_y": 0,
+        "opacity": 1.0
+    },
+    {
+        "camera": "CAM_07",
+        "image": "MASK_CAM_07.png",
+        "x": 19.00,
+        "y": 22.21,
+        "z": 1.18,
+        "offset_2d_x": 0,
+        "offset_2d_y": 0,
+        "opacity": 0.5
+    },
+    {
+        "camera": "CAM_08",
+        "image": "MASK_CAM_08.png",
+        "x": 11.00,
+        "y": 22.21,
+        "z": 1.26,
+        "offset_2d_x": 0,
+        "offset_2d_y": 0,
+        "opacity": 0.6
+    },
+    {
+        "camera": "CAM_09",
+        "image": "MASK_CAM_09.png",
+        "x": 16.50,
+        "y": 21.60,
+        "z": 1.31,
+        "offset_2d_x": 0,
+        "offset_2d_y": 0,
+        "opacity": 0.6
     }
 ]

@@ -11,8 +11,8 @@ class Camera
         @masks = []
     end
 
-    def add_mask(filename, x, y, z)
-        @masks.push Mask.new(filename, x, y, z)
+    def add_mask(filename, x, y, z, opacity)
+        @masks.push Mask.new(filename, x, y, z, opacity)
     end
 
     def draw_background

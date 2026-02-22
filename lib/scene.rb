@@ -48,6 +48,7 @@ class GameScene < Scene
                 when Gosu::Color.new(255, 255, 255, 0) then 'CAM_06' # yellow
                 when Gosu::Color.new(255, 0, 255, 255) then 'CAM_07' # cyan
                 when Gosu::Color.new(255, 128, 128, 128) then 'CAM_08' # grey
+                when Gosu::Color.new(255, 6, 112, 24) then 'CAM_09' # darker green
                 end
 
                 x = @minimap.width - x # X axis is inverted, Y was flipped in the image editor
@@ -82,7 +83,7 @@ class GameScene < Scene
             camera = mask['camera']
             filename = "scenes/#{dirname}/masks/#{mask['image']}"
             x, y, z = mask['offset_2d_x'], mask['offset_2d_y'], @cameras[camera].distance_from(mask['x'], mask['y'], mask['z'])
-            @cameras[camera].add_mask(filename, x, y, z)
+            @cameras[camera].add_mask(filename, x, y, z, mask['opacity'])
         end
     end
     
@@ -90,7 +91,7 @@ class GameScene < Scene
         x = hero.sprite.x
         y = hero.sprite.y
         angle = hero.angle
-        tolerance = 0.05
+        tolerance = 0.25
 
         probe_x = x + Math.cos(angle) * tolerance
         probe_y = y + Math.sin(angle) * tolerance
@@ -149,8 +150,8 @@ class GameScene < Scene
         glEnable(GL_TEXTURE_2D)
     end
 
-    def draw_minimap
-        x, y, z = 10, 10, 10
+    def draw_minimap(z)
+        x, y, z = 10, 10, z
         @minimap.draw(x, y, z)
         Gosu.draw_rect(@minimap.width - @hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
     end
@@ -186,6 +187,6 @@ class GameScene < Scene
             end
         end
         camera.draw_masks(z_offset)
-        Gosu.scale(4, 4) { draw_minimap }        
+        Gosu.scale(4, 4) { draw_minimap(1000) }        
     end
 end

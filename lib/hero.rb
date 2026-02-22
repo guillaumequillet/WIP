@@ -2,7 +2,7 @@ class Hero
     attr_reader :sprite, :angle
     def initialize(scene, spritesheet, x, y, z = 0)
         @scene = scene
-        @sprite = Sprite.new(spritesheet, x, y, 0, 2)
+        @sprite = Sprite.new(spritesheet, x, y, 0, 3)
         @speed = 0.005
         @angle = 0
         @radius = 0.25
