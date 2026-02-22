@@ -28,6 +28,7 @@ class GameScene < Scene
     def load_map(dirname)
         load_minimap(dirname)
         load_json(dirname)
+        load_masks(dirname)
     end
     
     def load_minimap(dirname)
@@ -67,6 +68,22 @@ class GameScene < Scene
         end
         
         @active_camera = @cameras.keys.first
+    end
+
+    def load_masks(dirname)
+        @masks = []
+        path = "scenes/#{dirname}/masks/masks.json"
+
+        return unless File.exist?(path)
+
+        data = JSON.parse(File.read(path))
+
+        data.each do |mask|
+            camera = mask['camera']
+            filename = "scenes/#{dirname}/masks/#{mask['image']}"
+            x, y, z = 0, 0, @cameras[camera].distance_from(mask['x'], mask['y'], mask['z'])
+            @cameras[camera].add_mask(filename, x, y, z)
+        end
     end
     
     def get_active_camera(hero)
@@ -149,21 +166,26 @@ class GameScene < Scene
         @hero.update(dt, @cameras[@active_camera])
         get_active_camera(@hero)
 
-        @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x.floor(2)}, #{@hero.sprite.y.floor(2)}, #{@hero.sprite.z.floor(2)}"
+        distance = @cameras[@active_camera].distance_from(@hero.sprite.x, @hero.sprite.y, @hero.sprite.z).floor(2)
+        @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x.floor(2)}, #{@hero.sprite.y.floor(2)}, #{@hero.sprite.z.floor(2)}, Distance camera : #{distance}"
     end
 
     def draw
         super
+        z_offset = 1000
         camera = @cameras[@active_camera] 
         camera.draw_background
-        Gosu.gl(1) do
+
+        hero_distance = camera.distance_from(@hero.sprite.x, @hero.sprite.y, @hero.sprite.z)
+        Gosu.gl(z_offset - hero_distance) do
             camera.opengl_setup
-            @hero.draw(@cameras[@active_camera])
+            @hero.draw(camera)
             if @debug
                 draw_debug_tiles
                 draw_gizmo
             end
         end
+        camera.draw_masks(z_offset)
         Gosu.scale(4, 4) { draw_minimap }        
     end
 end

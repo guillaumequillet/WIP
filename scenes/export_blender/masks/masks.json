@@ -1,0 +1,30 @@
+[
+    {
+        "camera": "CAM_02",
+        "image": "MASK_CAM_02_1.png",
+        "x": 19.49,
+        "y": 9.40,
+        "z": 1.31
+    },
+    {
+        "camera": "CAM_02",
+        "image": "MASK_CAM_02_2.png",
+        "x": 10.49,
+        "y": 9.40,
+        "z": 1.31
+    },
+    {
+        "camera": "CAM_05",
+        "image": "MASK_CAM_05.png",
+        "x": 19.49,
+        "y": 9.40,
+        "z": 1.31
+    },
+    {
+        "camera": "CAM_06",
+        "image": "MASK_CAM_06.png",
+        "x": 10.49,
+        "y": 9.40,
+        "z": 1.31
+    }
+]
