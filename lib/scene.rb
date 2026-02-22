@@ -81,10 +81,8 @@ class GameScene < Scene
         tile_x = probe_x.floor
         tile_y = probe_y.floor
 
-        if @grid.has_key?([tile_x, tile_y])
+        if [tile_x, tile_y] != [x.floor, y.floor] && @grid.has_key?([tile_x, tile_y])
             @active_camera = @grid[[tile_x, tile_y]]
-        else
-            puts("Error : no camera found for position [#{tile_x}, #{tile_y}]")
         end
     end
 
