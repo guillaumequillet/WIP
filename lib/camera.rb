@@ -38,7 +38,7 @@ class Camera
         
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity
-        gluPerspective(@fovy, @window.width.to_f / @window.height, 0.01, 2000.0)
+        gluPerspective(@fovy, width.to_f / height, 0.01, 2000.0)
         
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity

@@ -168,7 +168,7 @@ class GameScene < Scene
         get_active_camera(@hero)
 
         distance = @cameras[@active_camera].distance_from(@hero.sprite.x, @hero.sprite.y, @hero.sprite.z).floor(2)
-        @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x.floor(2)}, #{@hero.sprite.y.floor(2)}, #{@hero.sprite.z.floor(2)}, Distance camera : #{distance}"
+        # @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x.floor(2)}, #{@hero.sprite.y.floor(2)}, #{@hero.sprite.z.floor(2)}, Distance camera : #{distance}"
     end
 
     def draw
