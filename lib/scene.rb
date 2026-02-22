@@ -81,7 +81,7 @@ class GameScene < Scene
         data.each do |mask|
             camera = mask['camera']
             filename = "scenes/#{dirname}/masks/#{mask['image']}"
-            x, y, z = 0, 0, @cameras[camera].distance_from(mask['x'], mask['y'], mask['z'])
+            x, y, z = mask['offset_2d_x'], mask['offset_2d_y'], @cameras[camera].distance_from(mask['x'], mask['y'], mask['z'])
             @cameras[camera].add_mask(filename, x, y, z)
         end
     end
