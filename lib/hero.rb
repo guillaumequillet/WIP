@@ -6,7 +6,6 @@ class Hero
         @speed = 0.005
         @angle = 0
         @radius = 0.25
-        @shadow_size = 16
         @walk, @rows = [1, 0, 1, 2], { dos: 0, droite: 1, face: 2, gauche: 3 }
         @shadow = Gosu::Image.new('gfx/shadow.png', retro: true)
     end
@@ -43,7 +42,7 @@ class Hero
         s_info = @shadow.gl_tex_info; return unless s_info
         glEnable(GL_TEXTURE_2D); glBindTexture(GL_TEXTURE_2D, s_info.tex_name)
         glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        s_sz = 0.5
+        s_sz = 0.75
         glPushMatrix
         glTranslatef(@sprite.x, @sprite.y, @sprite.z)
         glBegin(GL_QUADS)

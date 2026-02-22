@@ -101,23 +101,43 @@
     },
     {
         "camera": "CAM_07",
-        "image": "MASK_CAM_07.png",
+        "image": "MASK_CAM_07_1.png",
         "x": 19.00,
         "y": 22.21,
         "z": 1.18,
         "offset_2d_x": 0,
         "offset_2d_y": 0,
-        "opacity": 0.5
+        "opacity": 0.3
+    },
+    {
+        "camera": "CAM_07",
+        "image": "MASK_CAM_07_2.png",
+        "x": 19.00,
+        "y": 22.21,
+        "z": 1.18,
+        "offset_2d_x": 0,
+        "offset_2d_y": 0,
+        "opacity": 0.8
     },
     {
         "camera": "CAM_08",
-        "image": "MASK_CAM_08.png",
+        "image": "MASK_CAM_08_1.png",
         "x": 11.00,
         "y": 22.21,
         "z": 1.26,
         "offset_2d_x": 0,
         "offset_2d_y": 0,
-        "opacity": 0.6
+        "opacity": 0.3
+    },
+    {
+        "camera": "CAM_08",
+        "image": "MASK_CAM_08_2.png",
+        "x": 11.00,
+        "y": 22.21,
+        "z": 1.26,
+        "offset_2d_x": 0,
+        "offset_2d_y": 0,
+        "opacity": 0.8
     },
     {
         "camera": "CAM_09",
@@ -127,6 +147,6 @@
         "z": 1.31,
         "offset_2d_x": 0,
         "offset_2d_y": 0,
-        "opacity": 0.6
+        "opacity": 0.3
     }
 ]
