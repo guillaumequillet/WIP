@@ -45,7 +45,7 @@ class GameScene < Scene
                 when Gosu::Color.new(255, 255, 0, 255) then 'CAM_04'
                 end
 
-                x = @minimap.width - x # X axis is inverted
+                x = @minimap.width - x # X axis is inverted, Y was flipped in the image editor
 
                 @grid[[x, y]] = camera unless camera.nil?
                 @blocks.push [x, y] if camera.nil?

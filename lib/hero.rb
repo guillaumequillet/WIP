@@ -3,18 +3,12 @@ class Hero
     def initialize(scene, spritesheet, x, y, z = 0)
         @scene = scene
         @sprite = Sprite.new(spritesheet, x, y, 0, 2)
-        @speed = 0.05
+        @speed = 0.005
         @angle = 0
-        @radius = 0.1
+        @radius = 0.25
+        @shadow_size = 16
         @walk, @rows = [1, 0, 1, 2], { dos: 0, droite: 1, face: 2, gauche: 3 }
-        generate_shadow
-    end
-
-    def generate_shadow
-        @shadow = Gosu.render(8, 8, retro: true) do
-            c = Gosu::Color.new(90, 0, 0, 0)
-            8.times { |py| 8.times { |px| Gosu.draw_rect(px, py, 1, 1, c) if Math.sqrt((px-4)**2 + (py-4)**2) <= 3.5 } }
-        end
+        @shadow = Gosu::Image.new('gfx/shadow.png', retro: true)
     end
 
     def update(dt, camera)
@@ -27,8 +21,8 @@ class Hero
         if @moving
             input_angle = Math.atan2(dy_screen, dx_screen)
             @angle = camera.yaw + input_angle - Math::PI / 2.0
-            mv_x = Math.cos(@angle) * @speed
-            mv_y = Math.sin(@angle) * @speed
+            mv_x = Math.cos(@angle) * @speed * dt
+            mv_y = Math.sin(@angle) * @speed * dt
 
             collisions = @scene.blocks
             @sprite.x += mv_x unless collisions.any? { |b| hit?(b, @sprite.x + mv_x, @sprite.y, @radius) }
@@ -49,13 +43,16 @@ class Hero
         s_info = @shadow.gl_tex_info; return unless s_info
         glEnable(GL_TEXTURE_2D); glBindTexture(GL_TEXTURE_2D, s_info.tex_name)
         glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        s_sz = @sprite.scale * 0.15
+        s_sz = 0.5
+        glPushMatrix
+        glTranslatef(@sprite.x, @sprite.y, @sprite.z)
         glBegin(GL_QUADS)
             glTexCoord2f(s_info.left, s_info.bottom); glVertex3f(-s_sz, -s_sz, 0.01)
             glTexCoord2f(s_info.right, s_info.bottom); glVertex3f(s_sz, -s_sz, 0.01)
             glTexCoord2f(s_info.right, s_info.top);    glVertex3f(s_sz, s_sz, 0.01)
             glTexCoord2f(s_info.left, s_info.top);     glVertex3f(-s_sz, s_sz, 0.01)
         glEnd
+        glPopMatrix
         glDisable(GL_BLEND)
     end
 

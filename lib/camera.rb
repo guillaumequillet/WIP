@@ -16,12 +16,6 @@ class Camera
         @background.draw(0, 0, 0, scale, scale)
     end
 
-    def angle_from_sprite(player_x, player_y)
-        angle_rad = Math.atan2(player_y - @y, player_x - @x)
-        angle_deg = angle_rad * 180.0 / Math::PI + 90.0
-        return angle_deg
-    end
-
     def opengl_setup
         glEnable(GL_DEPTH_TEST)
         glClear(GL_DEPTH_BUFFER_BIT)
