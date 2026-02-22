@@ -22,7 +22,7 @@ class GameScene < Scene
         super(window)
         load_map(dirname)
         @debug = false
-        @hero = Hero.new(self, 'gfx/jill.png', 14, 12)
+        @hero = Hero.new(self, 'gfx/jill.png', 15, 5)
     end
 
     def load_map(dirname)
@@ -42,7 +42,11 @@ class GameScene < Scene
                 when Gosu::Color::RED then 'CAM_01'
                 when Gosu::Color::GREEN then 'CAM_02'
                 when Gosu::Color::BLUE then 'CAM_03'
-                when Gosu::Color.new(255, 255, 0, 255) then 'CAM_04'
+                when Gosu::Color.new(255, 255, 0, 255) then 'CAM_04' # purple
+                when Gosu::Color.new(255, 246, 111, 11) then 'CAM_05' # orange
+                when Gosu::Color.new(255, 255, 255, 0) then 'CAM_06' # yellow
+                when Gosu::Color.new(255, 0, 255, 255) then 'CAM_07' # cyan
+                when Gosu::Color.new(255, 128, 128, 128) then 'CAM_08' # grey
                 end
 
                 x = @minimap.width - x # X axis is inverted, Y was flipped in the image editor
@@ -65,7 +69,18 @@ class GameScene < Scene
         @active_camera = @cameras.keys.first
     end
     
-    def get_active_camera(tile_x, tile_y)
+    def get_active_camera(hero)
+        x = hero.sprite.x
+        y = hero.sprite.y
+        angle = hero.angle
+        tolerance = 0.05
+
+        probe_x = x + Math.cos(angle) * tolerance
+        probe_y = y + Math.sin(angle) * tolerance
+
+        tile_x = probe_x.floor
+        tile_y = probe_y.floor
+
         if @grid.has_key?([tile_x, tile_y])
             @active_camera = @grid[[tile_x, tile_y]]
         else
@@ -134,7 +149,7 @@ class GameScene < Scene
     def update(dt)
         super(dt)
         @hero.update(dt, @cameras[@active_camera])
-        get_active_camera(@hero.sprite.x.floor, @hero.sprite.y.floor)
+        get_active_camera(@hero)
 
         @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x.floor(2)}, #{@hero.sprite.y.floor(2)}, #{@hero.sprite.z.floor(2)}"
     end

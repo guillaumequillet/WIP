@@ -1,5 +1,5 @@
 class Hero
-    attr_reader :sprite
+    attr_reader :sprite, :angle
     def initialize(scene, spritesheet, x, y, z = 0)
         @scene = scene
         @sprite = Sprite.new(spritesheet, x, y, 0, 2)
