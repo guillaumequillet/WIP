@@ -35,6 +35,7 @@ class GameScene < Scene
         @grid = {}
         @blocks = []
         @minimap = Gosu::Image.new("scenes/#{dirname}/minimap.png", retro: true)
+        @minimap_layout = Gosu::Image.new("scenes/#{dirname}/minimap_layout.png", retro: true)
 
         @minimap.width.times do |x|
             @minimap.height.times do |y|
@@ -53,8 +54,11 @@ class GameScene < Scene
 
                 x = @minimap.width - x # X axis is inverted, Y was flipped in the image editor
 
-                @grid[[x, y]] = camera unless camera.nil?
-                @blocks.push [x, y] if camera.nil?
+                if !camera.nil?
+                    @grid[[x, y]] = camera
+                else
+                    @blocks.push [x, y]
+                end
             end
         end
     end
@@ -151,9 +155,14 @@ class GameScene < Scene
     end
 
     def draw_minimap(z)
-        x, y, z = 10, 10, z
-        @minimap.draw(x, y, z)
-        Gosu.draw_rect(@minimap.width - @hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
+        x, y, z = 2, 2, z
+        if @debug
+            @minimap.draw(x, y, z)
+            Gosu.draw_rect(@minimap.width - @hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::WHITE, z + 1)
+        else
+            @minimap_layout.draw(x, y, z, 1, 1, Gosu::Color.new(200, 255, 255, 255))
+            Gosu.draw_rect(@minimap.width - @hero.sprite.x.floor + x, @hero.sprite.y.floor + y, 1, 1, Gosu::Color::GREEN, z + 1)
+        end
     end
 
     def button_down(id)
