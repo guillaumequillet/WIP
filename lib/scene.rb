@@ -1,4 +1,5 @@
 class Scene
+    attr_reader :window
     def initialize(window)
         @window = window
     end
@@ -17,18 +18,32 @@ class Scene
 end
 
 class GameScene < Scene
-    attr_reader :grid, :blocks
-    def initialize(window, dirname)
+    attr_reader :grid, :blocks, :hero
+    def initialize(window, dirname, hero_tile_x = 0, hero_tile_y = 0)
         super(window)
         load_map(dirname)
+        load_hero(hero_tile_x, hero_tile_y)
         @debug = false
-        @hero = Hero.new(self, 'gfx/jill.png', 15, 5)
     end
-
+    
     def load_map(dirname)
         load_minimap(dirname)
-        load_json(dirname)
+        load_jsons(dirname)
         load_masks(dirname)
+    end
+
+    def load_hero(tile_x = 0, tile_y = 0)
+        unless defined?(@hero)
+            @hero = Hero.new(self, 'gfx/jill.png', tile_x, tile_y)
+        else
+            @hero.sprite.x = tile_x
+            @hero.sprite.y = tile_y
+        end
+    end
+
+    def teleport(dirname, tile_x, tile_y)
+        load_map(dirname)
+        load_hero(tile_x, tile_y)
     end
     
     def load_minimap(dirname)
@@ -63,7 +78,20 @@ class GameScene < Scene
         end
     end
 
-    def load_json(dirname)
+    def load_jsons(dirname)
+        # events JSON file
+        @events = []
+        path = "scenes/#{dirname}/events.json"
+        if File.exist?(path)
+            data = JSON.parse(File.read(path))
+            data.each do |event|
+                if event['type'] == 'teleport'
+                    @events.push TeleportEvent.new(self, event['trigger'], event['position'], { target_map: event['target_map'], target_position: event['target_position']})
+                end
+            end
+        end
+
+        # camera JSON file
         data = JSON.parse(File.read("scenes/#{dirname}/cameras_data.json"))
         @cameras = {}
 
@@ -168,7 +196,7 @@ class GameScene < Scene
     def button_down(id)
         super(id)
         @debug = !@debug if id == Gosu::KB_D
-        next_camera if id == Gosu::KB_SPACE
+        @events.each {|event| event.button_down(id)}
     end
 
     def update(dt)
@@ -176,8 +204,7 @@ class GameScene < Scene
         @hero.update(dt, @cameras[@active_camera])
         get_active_camera(@hero)
 
-        distance = @cameras[@active_camera].distance_from(@hero.sprite.x, @hero.sprite.y, @hero.sprite.z).floor(2)
-        # @window.caption = "Camera : #{@active_camera} | HERO : #{@hero.sprite.x.floor(2)}, #{@hero.sprite.y.floor(2)}, #{@hero.sprite.z.floor(2)}, Distance camera : #{distance}"
+        @events.each {|event| event.update(dt, @hero)}
     end
 
     def draw

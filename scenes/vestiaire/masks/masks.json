@@ -1,0 +1,12 @@
+[
+    {
+        "camera": "CAM_01",
+        "image": "MASK_CAM_01.png",
+        "x": 6.50,
+        "y": 8.00,
+        "z": 0.76,
+        "offset_2d_x": 415,
+        "offset_2d_y": 240,
+        "opacity": 1.0
+    }
+]

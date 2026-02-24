@@ -1,5 +1,5 @@
 class Hero
-    attr_reader :sprite, :angle
+    attr_reader :sprite, :angle, :radius
     def initialize(scene, spritesheet, x, y, z = 0)
         @scene = scene
         @sprite = Sprite.new(spritesheet, x, y, 0, 3)
@@ -7,7 +7,12 @@ class Hero
         @angle = 0
         @radius = 0.25
         @walk, @rows = [1, 0, 1, 2], { dos: 0, droite: 1, face: 2, gauche: 3 }
+        @frame = 1
         @shadow = Gosu::Image.new('gfx/shadow.png', retro: true)
+
+        @sfx = {
+            walk: Gosu::Sample.new('sfx/footstep_tile_4.ogg')
+        }
     end
 
     def update(dt, camera)
@@ -56,7 +61,14 @@ class Hero
     end
 
     def draw(camera)
-        frame = @moving ? @walk[(Gosu.milliseconds / 150) % 4] : 1
+        frame = @moving ? @walk[(Gosu.milliseconds / 160) % 4] : 1
+
+        # if we're moving and changing foot
+        if frame != 1 && frame != @frame
+            @frame = frame
+            @sfx[:walk].play(0.01)
+        end
+
         tile = @rows[@dir] * 3 + frame
         draw_shadow
         @sprite.draw(camera.yaw, tile)

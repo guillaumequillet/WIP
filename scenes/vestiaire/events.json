@@ -1,0 +1,9 @@
+[
+    {
+        "type": "teleport",
+        "trigger": "validation_key",
+        "position": [8, 5],
+        "target_map": "hall",
+        "target_position": [20, 6]
+    }
+]

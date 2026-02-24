@@ -5,7 +5,8 @@ class Window < Gosu::Window
         load_config_file
         super(@width, @height, @fullscreen)
         self.caption = @title
-        @scene = GameScene.new(self, 'export_blender')
+        @scene = GameScene.new(self, 'vestiaire', 8, 6)
+        # @scene = GameScene.new(self, 'hall', 16, 8)
     end
 
     def load_config_file
