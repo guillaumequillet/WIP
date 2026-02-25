@@ -24,6 +24,31 @@ class GameScene < Scene
         load_map(dirname)
         load_hero(hero_tile_x, hero_tile_y)
         @debug = false
+
+        # temp
+        @flames = {}
+        @flames['CAM_01'] = []
+        @flames['CAM_01'].push << Flame.new(self, 42, 259, 2.7, :candle)
+        @flames['CAM_01'].push << Flame.new(self, 606, 259, 2.7, :candle)
+        @flames['CAM_02'] = []
+        @flames['CAM_02'].push << Flame.new(self, 186, 223, 1.5, :candle)
+        @flames['CAM_02'].push << Flame.new(self, 457, 222, 1.5, :candle)
+        @flames['CAM_02'].push << Flame.new(self, 640, 275, 2.0, :candle)
+        @flames['CAM_03'] = []
+        @flames['CAM_03'].push << Flame.new(self, 362, 194, 1.5, :candle)
+        @flames['CAM_06'] = []
+        @flames['CAM_06'].push << Flame.new(self, 248, 138, 2.5, :candle)
+        @flames['CAM_05'] = []
+        @flames['CAM_05'].push << Flame.new(self, 392, 181, 2.5, :candle)
+        @flames['CAM_04'] = []
+        @flames['CAM_04'].push << Flame.new(self, 276, 194, 1.5, :candle)
+        @flames['CAM_07'] = []
+        @flames['CAM_07'].push << Flame.new(self, 259, 278, 1.0, :candle)
+        @flames['CAM_08'] = []
+        @flames['CAM_08'].push << Flame.new(self, 373, 170, 1.0, :candle)
+        @flames['CAM_09'] = []
+        @flames['CAM_09'].push << Flame.new(self, 59, 54, 1.0, :candle)
+        @flames['CAM_09'].push << Flame.new(self, 583, 51, 1.0, :candle)
     end
     
     def load_map(dirname)
@@ -204,6 +229,11 @@ class GameScene < Scene
         set_active_camera(@hero)
 
         @events.each {|event| event.update(dt, @hero)}
+
+        # temp
+        if @flames.has_key?(@active_camera)
+            @flames[@active_camera].each {|flame| flame.update}
+        end
     end
 
     def draw
@@ -221,6 +251,12 @@ class GameScene < Scene
                 draw_gizmo
             end
         end
+
+        # temp
+        if @flames.has_key?(@active_camera)
+            @flames[@active_camera].each {|flame| flame.draw}
+        end
+
         camera.draw_masks(z_offset)
         Gosu.scale(4, 4) { draw_minimap(1000) }        
     end
