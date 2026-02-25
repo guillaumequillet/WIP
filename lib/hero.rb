@@ -1,6 +1,6 @@
 class Hero
     attr_reader :sprite, :angle, :radius
-    def initialize(scene, spritesheet, x, y, z = 0)
+    def initialize(scene, spritesheet, x, y, z = 0, orientation = :north)
         @scene = scene
         @sprite = Sprite.new(spritesheet, x, y, 0, 3)
         @speed = 0.005
@@ -13,6 +13,18 @@ class Hero
         @sfx = {
             walk: Gosu::Sample.new('sfx/footstep_tile_4.ogg')
         }
+
+        orient(orientation)
+    end
+
+    def orient(orientation)
+        camera = @scene.get_active_camera
+        @angle = case orientation
+        when :north then camera.yaw
+        when :south then camera.yaw + Math::PI
+        when :east then camera.yaw - (Math::PI / 2.0)
+        when :west then camera.yaw + (Math::PI / 2.0)
+        end
     end
 
     def update(dt, camera)

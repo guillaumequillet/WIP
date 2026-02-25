@@ -32,18 +32,19 @@ class GameScene < Scene
         load_masks(dirname)
     end
 
-    def load_hero(tile_x = 0, tile_y = 0)
+    def load_hero(tile_x = 0, tile_y = 0, orientation = :north)
         unless defined?(@hero)
-            @hero = Hero.new(self, 'gfx/jill.png', tile_x, tile_y)
+            @hero = Hero.new(self, 'gfx/jill.png', tile_x, tile_y, orientation)
         else
             @hero.sprite.x = tile_x
             @hero.sprite.y = tile_y
+            @hero.orient(orientation)
         end
     end
 
-    def teleport(dirname, tile_x, tile_y)
+    def teleport(dirname, tile_x, tile_y, orientation)
         load_map(dirname)
-        load_hero(tile_x, tile_y)
+        load_hero(tile_x, tile_y, orientation)
     end
     
     def load_minimap(dirname)
@@ -86,7 +87,7 @@ class GameScene < Scene
             data = JSON.parse(File.read(path))
             data.each do |event|
                 if event['type'] == 'teleport'
-                    @events.push TeleportEvent.new(self, event['trigger'], event['position'], { target_map: event['target_map'], target_position: event['target_position']})
+                    @events.push TeleportEvent.new(self, event['trigger'], event['position'], { target_map: event['target_map'], target_position: event['target_position'], target_orientation: event['target_orientation'].to_sym})
                 end
             end
         end
@@ -119,7 +120,7 @@ class GameScene < Scene
         end
     end
     
-    def get_active_camera(hero)
+    def set_active_camera(hero)
         x = hero.sprite.x
         y = hero.sprite.y
         angle = hero.angle
@@ -136,10 +137,8 @@ class GameScene < Scene
         end
     end
 
-    def next_camera
-        new_active_camera_index = @cameras.keys.index(@active_camera) + 1
-        new_active_camera_index = 0 if new_active_camera_index > @cameras.keys.size - 1
-        @active_camera = @cameras.keys[new_active_camera_index]
+    def get_active_camera
+        return @cameras[@active_camera]
     end
 
     def draw_debug_tiles
@@ -202,7 +201,7 @@ class GameScene < Scene
     def update(dt)
         super(dt)
         @hero.update(dt, @cameras[@active_camera])
-        get_active_camera(@hero)
+        set_active_camera(@hero)
 
         @events.each {|event| event.update(dt, @hero)}
     end
