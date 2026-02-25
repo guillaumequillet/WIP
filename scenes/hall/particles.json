@@ -1,0 +1,93 @@
+[
+    {
+        "camera": "CAM_01",
+        "type": "Candle",
+        "x": 42,
+        "y": 259,
+        "scale": 2.7 
+    },
+    {
+        "camera": "CAM_01",
+        "type": "Candle",
+        "x": 606,
+        "y": 259,
+        "scale": 2.7 
+    },
+    {
+        "camera": "CAM_02",
+        "type": "Candle",
+        "x": 186,
+        "y": 223,
+        "scale": 1.5 
+    },
+    {
+        "camera": "CAM_02",
+        "type": "Candle",
+        "x": 457,
+        "y": 222,
+        "scale": 1.5 
+    },
+    {
+        "camera": "CAM_02",
+        "type": "Candle",
+        "x": 640,
+        "y": 275,
+        "scale": 2.0 
+    },
+    {
+        "camera": "CAM_03",
+        "type": "Candle",
+        "x": 362,
+        "y": 194,
+        "scale": 1.5 
+    },
+    {
+        "camera": "CAM_04",
+        "type": "Candle",
+        "x": 276,
+        "y": 194,
+        "scale": 1.5 
+    },
+    {
+        "camera": "CAM_05",
+        "type": "Candle",
+        "x": 392,
+        "y": 181,
+        "scale": 2.5 
+    },
+    {
+        "camera": "CAM_06",
+        "type": "Candle",
+        "x": 248,
+        "y": 138,
+        "scale": 2.5 
+    },
+    {
+        "camera": "CAM_07",
+        "type": "Candle",
+        "x": 259,
+        "y": 278,
+        "scale": 1.0 
+    },
+    {
+        "camera": "CAM_08",
+        "type": "Candle",
+        "x": 373,
+        "y": 170,
+        "scale": 1.0 
+    },
+    {
+        "camera": "CAM_09",
+        "type": "Candle",
+        "x": 59,
+        "y": 54,
+        "scale": 1.0 
+    },
+    {
+        "camera": "CAM_09",
+        "type": "Candle",
+        "x": 583,
+        "y": 51,
+        "scale": 1.0 
+    }
+]
