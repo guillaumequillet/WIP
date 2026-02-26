@@ -11,7 +11,7 @@ class Hero
         @shadow = Gosu::Image.new('gfx/shadow.png', retro: true)
 
         @sfx = {
-            walk: Gosu::Sample.new('sfx/footstep_tile_4.ogg')
+            walk: [Gosu::Sample.new('sfx/step_1.mp3'), Gosu::Sample.new('sfx/step_2.mp3'), Gosu::Sample.new('sfx/step_3.mp3'), Gosu::Sample.new('sfx/step_4.mp3')]
         }
 
         orient(orientation)
@@ -78,7 +78,7 @@ class Hero
         # if we're moving and changing foot
         if frame != 1 && frame != @frame
             @frame = frame
-            @sfx[:walk].play(0.02)
+            @sfx[:walk].sample.play(0.05)
         end
 
         tile = @rows[@dir] * 3 + frame
