@@ -63,7 +63,7 @@ class Hero
         glPushMatrix
         glTranslatef(@sprite.x, @sprite.y, @sprite.z)
         glBegin(GL_QUADS)
-            glTexCoord2f(s_info.left, s_info.bottom); glVertex3f(-s_sz, -s_sz, 0.01)
+            glTexCoord2f(s_info.left, s_info.bottom);  glVertex3f(-s_sz, -s_sz, 0.01)
             glTexCoord2f(s_info.right, s_info.bottom); glVertex3f(s_sz, -s_sz, 0.01)
             glTexCoord2f(s_info.right, s_info.top);    glVertex3f(s_sz, s_sz, 0.01)
             glTexCoord2f(s_info.left, s_info.top);     glVertex3f(-s_sz, s_sz, 0.01)
@@ -78,7 +78,7 @@ class Hero
         # if we're moving and changing foot
         if frame != 1 && frame != @frame
             @frame = frame
-            @sfx[:walk].play(0.01)
+            @sfx[:walk].play(0.02)
         end
 
         tile = @rows[@dir] * 3 + frame

@@ -101,6 +101,7 @@ class GameScene < Scene
                 @particles[particle['camera']] ||= []
                 case particle['type']
                     when 'Candle' then @particles[particle['camera']].push Candle.new(particle['x'], particle['y'], particle['scale'])
+                    when 'Bugs'   then @particles[particle['camera']].push Bugs.new(particle['x'], particle['y'], particle['qty'])
                 end
             end
         end
