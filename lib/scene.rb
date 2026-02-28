@@ -31,6 +31,8 @@ class GameScene < Scene
         @fade_alpha = 0
         @fade_state = :none # :none, :out, :in
         @fade_speed = 8
+
+        @font = Gosu::Font.new(32, { font_name: Gosu.default_font_name })
     end
 
     def load_sounds
@@ -56,7 +58,7 @@ class GameScene < Scene
 
     def teleport
         if @sounds.has_key?(@teleport_sound)
-            @sounds[@teleport_sound].play(0.6)
+            @sounds[@teleport_sound].play(0.05)
         end
         load_map(@teleport_dirname)
         load_hero(@teleport_tile_x, @teleport_tile_y, @teleport_orientation)
@@ -236,20 +238,6 @@ class GameScene < Scene
         @events.each {|event| event.button_down(id)}
     end
 
-    def update(dt)
-        super(dt)
-        update_fading
-
-        @hero.update(dt, @cameras[@active_camera])
-        set_active_camera(@hero)
-
-        @events.each {|event| event.update(dt, @hero)}
-
-        if @particles.has_key?(@active_camera)
-            @particles[@active_camera].each {|particle| particle.update}
-        end
-    end
-
     def update_fading
         case @fade_state
         when :out
@@ -268,10 +256,30 @@ class GameScene < Scene
         end
     end
 
+    def update(dt)
+        super(dt)
+        update_fading
+
+        @hero.update(dt, @cameras[@active_camera])
+        set_active_camera(@hero)
+
+        @events.each {|event| event.update(dt, @hero)}
+
+        if @particles.has_key?(@active_camera)
+            @particles[@active_camera].each {|particle| particle.update}
+        end
+    end
+
     def draw_fading
         if @fade_state != :none && @fade_alpha > 0
             Gosu.draw_rect(0, 0, @window.width, @window.height, Gosu::Color.new(@fade_alpha, 0, 0, 0), 10000)
         end
+    end
+
+    def draw_prompt(text)
+        height = 50
+        Gosu.draw_rect(0, @window.height - height - 10, @window.width, height, Gosu::Color.new(128, 0, 0, 0), 10000)
+        @font.draw_text(text, (@window.width - @font.text_width(text)) / 2, @window.height - height - 2, 10000)
     end
 
     def draw
@@ -294,9 +302,10 @@ class GameScene < Scene
             @particles[@active_camera].each {|particle| particle.draw}
         end
 
+        @events.each {|event| event.draw(@hero)}
+
         camera.draw_masks(z_offset)
         Gosu.scale(4, 4) { draw_minimap(1000) }        
-
         draw_fading
     end
 end

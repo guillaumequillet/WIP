@@ -23,7 +23,11 @@ class Event
     end
 
     def update(dt, hero)
+        
+    end
 
+    def draw(hero)
+        
     end
 end
 
@@ -42,5 +46,12 @@ class TeleportEvent < Event
         orientation = @parameters[:target_orientation]
         sound = @parameters[:sound]
         @scene.ask_for_teleport(dirname, x, y, orientation, sound)
+    end
+
+    def draw(hero)
+        super(hero)
+        if collides?(hero.sprite.x, hero.sprite.y, hero.radius)
+            @scene.draw_prompt("[#{Gosu.button_name(VALIDATION_KEY)}] Open Door")
+        end
     end
 end
