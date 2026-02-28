@@ -40,6 +40,7 @@ class TeleportEvent < Event
     def teleport
         dirname, x, y = @parameters[:target_map], @parameters[:target_position][0], @parameters[:target_position][1]
         orientation = @parameters[:target_orientation]
-        @scene.teleport(dirname, x, y, orientation)
+        sound = @parameters[:sound]
+        @scene.ask_for_teleport(dirname, x, y, orientation, sound)
     end
 end

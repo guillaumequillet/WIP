@@ -5,6 +5,7 @@
         "position": [8, 5],
         "target_map": "hall",
         "target_position": [20, 6],
-        "target_orientation": "east"
+        "target_orientation": "east",
+        "sound": "door"
     }
 ]

@@ -5,6 +5,7 @@
         "position": [20, 6],
         "target_map": "vestiaire",
         "target_position": [8, 6],
-        "target_orientation": "south"
+        "target_orientation": "south",
+        "sound": "door"
     }
 ]

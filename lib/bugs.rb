@@ -49,16 +49,17 @@ class Bugs
         @x = x
         @y = y
         @bugs = []
-
         qty.times { @bugs << Bug.new(@x, @y) }
     end
 
     def update
-        @bugs.each(&:update)
+        @bugs.each {|bug| bug.update}
     end
 
     def draw
-        bugs_tries = @bugs.sort_by { |m| m.z }
-        bugs_tries.each {|bug|bug.draw}
+        unless @bugs.empty?
+            bugs_tries = @bugs.sort_by { |m| m.z }
+            bugs_tries.each {|bug| bug.draw}
+        end
     end
 end

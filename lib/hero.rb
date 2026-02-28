@@ -59,7 +59,7 @@ class Hero
         s_info = @shadow.gl_tex_info; return unless s_info
         glEnable(GL_TEXTURE_2D); glBindTexture(GL_TEXTURE_2D, s_info.tex_name)
         glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        s_sz = 0.75
+        s_sz = 0.65
         glPushMatrix
         glTranslatef(@sprite.x, @sprite.y, @sprite.z)
         glBegin(GL_QUADS)
@@ -78,7 +78,7 @@ class Hero
         # if we're moving and changing foot
         if frame != 1 && frame != @frame
             @frame = frame
-            @sfx[:walk].sample.play(0.05)
+            @sfx[:walk].sample.play(0.1)
         end
 
         tile = @rows[@dir] * 3 + frame

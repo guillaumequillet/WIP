@@ -2,6 +2,7 @@ class Scene
     attr_reader :window
     def initialize(window)
         @window = window
+        @sounds = {}
     end
 
     def button_down(id)
@@ -23,7 +24,18 @@ class GameScene < Scene
         super(window)
         load_map(dirname)
         load_hero(hero_tile_x, hero_tile_y)
+        load_sounds
         @debug = false
+
+        #fading
+        @fade_alpha = 0
+        @fade_state = :none # :none, :out, :in
+        @fade_speed = 8
+    end
+
+    def load_sounds
+        @sounds['door'] = Gosu::Sample.new('sfx/369618__cribbler__door-close-open-int.mp3')
+        @sounds['unlock_door'] = Gosu::Sample.new('sfx/unlock_door.mp3')
     end
     
     def load_map(dirname)
@@ -42,9 +54,21 @@ class GameScene < Scene
         end
     end
 
-    def teleport(dirname, tile_x, tile_y, orientation)
-        load_map(dirname)
-        load_hero(tile_x, tile_y, orientation)
+    def teleport
+        if @sounds.has_key?(@teleport_sound)
+            @sounds[@teleport_sound].play(0.6)
+        end
+        load_map(@teleport_dirname)
+        load_hero(@teleport_tile_x, @teleport_tile_y, @teleport_orientation)
+    end
+
+    def ask_for_teleport(dirname, tile_x, tile_y, orientation, sound)
+        @teleport_dirname = dirname
+        @teleport_tile_x = tile_x
+        @teleport_tile_y = tile_y
+        @teleport_orientation = orientation
+        @teleport_sound = sound
+        @fade_state = :out
     end
     
     def load_minimap(dirname)
@@ -87,7 +111,7 @@ class GameScene < Scene
             data = JSON.parse(File.read(path))
             data.each do |event|
                 if event['type'] == 'teleport'
-                    @events.push TeleportEvent.new(self, event['trigger'], event['position'], { target_map: event['target_map'], target_position: event['target_position'], target_orientation: event['target_orientation'].to_sym})
+                    @events.push TeleportEvent.new(self, event['trigger'], event['position'], { target_map: event['target_map'], target_position: event['target_position'], target_orientation: event['target_orientation'].to_sym, sound: event['sound']})
                 end
             end
         end
@@ -214,6 +238,8 @@ class GameScene < Scene
 
     def update(dt)
         super(dt)
+        update_fading
+
         @hero.update(dt, @cameras[@active_camera])
         set_active_camera(@hero)
 
@@ -221,6 +247,30 @@ class GameScene < Scene
 
         if @particles.has_key?(@active_camera)
             @particles[@active_camera].each {|particle| particle.update}
+        end
+    end
+
+    def update_fading
+        case @fade_state
+        when :out
+            @fade_alpha += @fade_speed
+            if @fade_alpha >= 255
+                @fade_alpha = 255
+                @fade_state = :in
+                teleport # we can now teleport because fade out is over
+            end
+        when :in
+            @fade_alpha -= @fade_speed
+            if @fade_alpha <= 0
+                @fade_alpha = 0
+                @fade_state = :none
+            end
+        end
+    end
+
+    def draw_fading
+        if @fade_state != :none && @fade_alpha > 0
+            Gosu.draw_rect(0, 0, @window.width, @window.height, Gosu::Color.new(@fade_alpha, 0, 0, 0), 10000)
         end
     end
 
@@ -246,5 +296,7 @@ class GameScene < Scene
 
         camera.draw_masks(z_offset)
         Gosu.scale(4, 4) { draw_minimap(1000) }        
+
+        draw_fading
     end
 end
