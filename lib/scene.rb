@@ -3,6 +3,7 @@ class Scene
     def initialize(window)
         @window = window
         @sounds = {}
+        @font = Gosu::Font.new(24, { name: Gosu.default_font_name })
     end
 
     def button_down(id)
@@ -31,8 +32,6 @@ class GameScene < Scene
         @fade_alpha = 0
         @fade_state = :none # :none, :out, :in
         @fade_speed = 8
-
-        @font = Gosu::Font.new(24, { name: Gosu.default_font_name })
     end
 
     def load_sounds

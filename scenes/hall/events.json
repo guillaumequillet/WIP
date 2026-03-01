@@ -4,7 +4,7 @@
         "trigger": "validation_key",
         "position": [20, 5],
         "size": [1, 2],
-        "target_map": "vestiaire",
+        "target_map": "cloakroom",
         "target_position": [8, 6],
         "target_orientation": "south",
         "sound": "door"
