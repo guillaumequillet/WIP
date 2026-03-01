@@ -9,6 +9,7 @@
 
     "keys": {
         "exit": ["Gosu::GP_BUTTON_4", "Gosu::KB_ESCAPE"],
+        "debug": ["Gosu::KB_F1"],
         "validation_key": ["Gosu::GP_BUTTON_0", "Gosu::KB_E"],
         "up": ["Gosu::GP_UP", "Gosu::KB_W"],
         "down": ["Gosu::GP_DOWN", "Gosu::KB_S"],

@@ -4,6 +4,7 @@ class Scene
         @window = window
         @sounds = {}
         @font = Gosu::Font.new(24, { name: Gosu.default_font_name })
+        @keys = @window.keys
     end
 
     def button_down(id)
@@ -237,7 +238,7 @@ class GameScene < Scene
 
     def button_down(id)
         super(id)
-        @debug = !@debug if id == Gosu::KB_D
+        @debug = !@debug if @keys[:debug].include?(id)
         @events.each {|event| event.button_down(id)}
     end
 
