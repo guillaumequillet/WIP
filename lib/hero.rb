@@ -16,7 +16,6 @@ class Hero
         }
 
         @keys = @scene.window.keys
-
         orient(orientation)
     end
 
