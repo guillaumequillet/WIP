@@ -11,13 +11,21 @@
     {
         "type": "examine",
         "trigger": "validation_key",
-        "position": [15, 4],
+        "position": [14, 4],
+        "size": [2, 1],
         "text": "I can't get out, it's too dangerous out there."
     },
     {
         "type": "examine",
         "trigger": "validation_key",
-        "position": [14, 4],
-        "text": "I can't get out, it's too dangerous out there."
+        "position": [13, 12],
+        "size": [3, 1],
+        "text": "I may let the developper finish the first floor before taking those stairs."
+    },
+    {
+        "type": "examine",
+        "trigger": "validation_key",
+        "position": [8, 10],
+        "text": "Who lit those candles ?"
     }
 ]

@@ -1,9 +1,12 @@
 class Event
     VALIDATION_KEY = Gosu::KB_RETURN # temp
-    def initialize(scene, type, trigger, position, parameters)
+    
+    attr_accessor :active
+    def initialize(scene, type, trigger, position, size, parameters)
         @scene = scene
         @type = type
         @position = position
+        @size = size
         @trigger = trigger
         @parameters = parameters
     end
@@ -14,7 +17,7 @@ class Event
 
     def collides?(px, py, r)
         x_min, y_min = @position[0], @position[1]
-        x_max, y_max = x_min + 1, y_min + 1
+        x_max, y_max = x_min + @size[0], y_min + @size[1]
         (px + r > x_min && px - r < x_max) && (py + r > y_min && py - r < y_max) 
     end
 
@@ -26,10 +29,36 @@ class Event
         
     end
 
-    def draw_prompt(text)
-        height = 30
-        Gosu.draw_rect(0, @scene.window.height - height - 10, @scene.window.width, height, Gosu::Color.new(128, 0, 0, 0), 10000)
-        @scene.font.draw_text(text, (@scene.window.width - @scene.font.text_width(text)) / 2, @scene.window.height - height - 7, 10000)
+    def draw_prompt(text, center = false)
+        padding = 10
+        max_width = @scene.window.width - padding * 2
+        @lines = []
+        @lines.push '' # first line
+        max_line_width = 0
+
+        text.split(' ').each_with_index do |word, i|
+            current_line_width = @scene.font.text_width(@lines.last)
+            next_word_width = @scene.font.text_width(word)
+
+            if current_line_width + next_word_width <= max_width
+                @lines[@lines.size - 1] += (word + ' ')
+            else
+                @lines.push (word + ' ')
+            end
+
+            last_line_width = @scene.font.text_width(@lines.last)
+            max_line_width = last_line_width if last_line_width > max_line_width
+        end
+
+        height = @lines.size * @scene.font.height + 2 * padding
+
+        Gosu.draw_rect(0, @scene.window.height - height, @scene.window.width, height, Gosu::Color.new(200, 0, 0, 0), 10000)
+        @lines.each_with_index do |line, i|
+            x = center ? (@scene.window.width - max_line_width) / 2 + padding : padding
+            y = @scene.window.height - height + @scene.font.height * i + padding
+            z = 10000
+            @scene.font.draw_text(line, x, y, z)
+        end
     end
 
     def draw(hero)
@@ -38,8 +67,8 @@ class Event
 end
 
 class TeleportEvent < Event
-    def initialize(scene, trigger, position, parameters)
-        super(scene, 'teleport', trigger, position, parameters)
+    def initialize(scene, trigger, position, size, parameters)
+        super(scene, 'teleport', trigger, position, size, parameters)
     end
 
     def process
@@ -57,18 +86,18 @@ class TeleportEvent < Event
     def draw(hero)
         super(hero)
         if collides?(hero.sprite.x, hero.sprite.y, hero.radius)
-            draw_prompt("[#{Gosu.button_name(VALIDATION_KEY)}] Open Door")
+            draw_prompt("[#{Gosu.button_name(VALIDATION_KEY)}] Open Door", true)
         end
     end
 end
 
 class ExamineEvent < Event
     attr_reader :displaying_text
-    def initialize(scene, trigger, position, parameters)    
-        super(scene, 'examine', trigger, position, parameters)
+    def initialize(scene, trigger, position, size, parameters)    
+        super(scene, 'examine', trigger, position, size, parameters)
         @cursor = 0
         @displaying_text = false
-        @letter_duration = 5
+        @letter_duration = 2
     end
     
     def process
@@ -105,7 +134,7 @@ class ExamineEvent < Event
         if @displaying_text
             draw_prompt(@parameters[:text].slice(0, @cursor))
         elsif collides?(hero.sprite.x, hero.sprite.y, hero.radius)
-            draw_prompt("[#{Gosu.button_name(VALIDATION_KEY)}] Examine")
+            draw_prompt("[#{Gosu.button_name(VALIDATION_KEY)}] Examine", true)
         end
     end 
 end

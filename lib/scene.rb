@@ -19,7 +19,7 @@ class Scene
 end
 
 class GameScene < Scene
-    attr_reader :grid, :blocks, :hero, :font
+    attr_reader :grid, :blocks, :hero, :font, :events
     def initialize(window, dirname, hero_tile_x = 0, hero_tile_y = 0)
         super(window)
         load_map(dirname)
@@ -112,10 +112,12 @@ class GameScene < Scene
         if File.exist?(path)
             data = JSON.parse(File.read(path))
             data.each do |event|
+                event['size'] = event['size'].nil? ? [1, 1] : event['size'] # default : 1x1 event
+                
                 if event['type'] == 'teleport'
-                    @events.push TeleportEvent.new(self, event['trigger'], event['position'], { target_map: event['target_map'], target_position: event['target_position'], target_orientation: event['target_orientation'].to_sym, sound: event['sound']})
+                    @events.push TeleportEvent.new(self, event['trigger'], event['position'], event['size'], { target_map: event['target_map'], target_position: event['target_position'], target_orientation: event['target_orientation'].to_sym, sound: event['sound'] })
                 elsif event['type'] == 'examine'
-                    @events.push ExamineEvent.new(self, event['trigger'], event['position'], { text: event['text'] })
+                    @events.push ExamineEvent.new(self, event['trigger'], event['position'], event['size'], { text: event['text'] })
                 end
             end
         end

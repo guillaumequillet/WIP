@@ -11,7 +11,8 @@
     {
         "type": "examine",
         "trigger": "validation_key",
-        "position": [9, 9],
-        "text": "A big mirror."
+        "position": [9, 8],
+        "size": [1, 3],
+        "text": "A big mirror. It's really strange that I can't see any reflection on it."
     }
 ]
