@@ -19,7 +19,7 @@ class Scene
 end
 
 class GameScene < Scene
-    attr_reader :grid, :blocks, :hero
+    attr_reader :grid, :blocks, :hero, :font
     def initialize(window, dirname, hero_tile_x = 0, hero_tile_y = 0)
         super(window)
         load_map(dirname)
@@ -32,7 +32,7 @@ class GameScene < Scene
         @fade_state = :none # :none, :out, :in
         @fade_speed = 8
 
-        @font = Gosu::Font.new(32, { font_name: Gosu.default_font_name })
+        @font = Gosu::Font.new(24, { name: Gosu.default_font_name })
     end
 
     def load_sounds
@@ -114,6 +114,8 @@ class GameScene < Scene
             data.each do |event|
                 if event['type'] == 'teleport'
                     @events.push TeleportEvent.new(self, event['trigger'], event['position'], { target_map: event['target_map'], target_position: event['target_position'], target_orientation: event['target_orientation'].to_sym, sound: event['sound']})
+                elsif event['type'] == 'examine'
+                    @events.push ExamineEvent.new(self, event['trigger'], event['position'], { text: event['text'] })
                 end
             end
         end
@@ -256,30 +258,32 @@ class GameScene < Scene
         end
     end
 
+    def should_freeze_inputs?
+        displaying_text =  @events.any? {|event| event.is_a?(ExamineEvent) && event.displaying_text}
+        fading = @fade_state != :none
+        return [displaying_text, fading].any?
+    end
+
     def update(dt)
         super(dt)
         update_fading
-
+        
         @hero.update(dt, @cameras[@active_camera])
         set_active_camera(@hero)
-
-        @events.each {|event| event.update(dt, @hero)}
-
+        
         if @particles.has_key?(@active_camera)
             @particles[@active_camera].each {|particle| particle.update}
         end
+        
+        @events.each {|event| event.update(dt, @hero)}
+        
+        @window.caption = "Hero Position [#{@hero.sprite.x.floor}, #{@hero.sprite.y.floor}]"
     end
 
     def draw_fading
         if @fade_state != :none && @fade_alpha > 0
             Gosu.draw_rect(0, 0, @window.width, @window.height, Gosu::Color.new(@fade_alpha, 0, 0, 0), 10000)
         end
-    end
-
-    def draw_prompt(text)
-        height = 50
-        Gosu.draw_rect(0, @window.height - height - 10, @window.width, height, Gosu::Color.new(128, 0, 0, 0), 10000)
-        @font.draw_text(text, (@window.width - @font.text_width(text)) / 2, @window.height - height - 2, 10000)
     end
 
     def draw

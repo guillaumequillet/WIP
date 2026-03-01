@@ -28,23 +28,27 @@ class Hero
     end
 
     def update(dt, camera)
-        l, r, u, d = Gosu.button_down?(Gosu::KB_LEFT), Gosu.button_down?(Gosu::KB_RIGHT), Gosu.button_down?(Gosu::KB_UP), Gosu.button_down?(Gosu::KB_DOWN)
+        unless @scene.should_freeze_inputs?
+            l, r, u, d = Gosu.button_down?(Gosu::KB_LEFT), Gosu.button_down?(Gosu::KB_RIGHT), Gosu.button_down?(Gosu::KB_UP), Gosu.button_down?(Gosu::KB_DOWN)
 
-        dx_screen = (r ? 1 : 0) - (l ? 1 : 0)
-        dy_screen = (u ? 1 : 0) - (d ? 1 : 0)
-        @moving = (dx_screen != 0 || dy_screen != 0)
+            dx_screen = (r ? 1 : 0) - (l ? 1 : 0)
+            dy_screen = (u ? 1 : 0) - (d ? 1 : 0)
+            @moving = (dx_screen != 0 || dy_screen != 0)
 
-        if @moving
-            input_angle = Math.atan2(dy_screen, dx_screen)
-            @angle = camera.yaw + input_angle - Math::PI / 2.0
-            mv_x = Math.cos(@angle) * @speed * dt
-            mv_y = Math.sin(@angle) * @speed * dt
+            if @moving
+                input_angle = Math.atan2(dy_screen, dx_screen)
+                @angle = camera.yaw + input_angle - Math::PI / 2.0
+                mv_x = Math.cos(@angle) * @speed * dt
+                mv_y = Math.sin(@angle) * @speed * dt
 
-            collisions = @scene.blocks
-            @sprite.x += mv_x unless collisions.any? { |b| hit?(b, @sprite.x + mv_x, @sprite.y, @radius) }
-            @sprite.y += mv_y unless collisions.any? { |b| hit?(b, @sprite.x, @sprite.y + mv_y, @radius) }
+                collisions = @scene.blocks
+                @sprite.x += mv_x unless collisions.any? { |b| hit?(b, @sprite.x + mv_x, @sprite.y, @radius) }
+                @sprite.y += mv_y unless collisions.any? { |b| hit?(b, @sprite.x, @sprite.y + mv_y, @radius) }
+            end
+        else
+            @moving = false
         end
-
+        
         rel = (@angle - camera.yaw + Math::PI) % (2 * Math::PI) - Math::PI
         @dir = rel.abs < Math::PI * 0.25 ? :dos : (rel.abs > Math::PI * 0.75 ? :face : (rel > 0 ? :droite : :gauche))
     end

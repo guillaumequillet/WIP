@@ -7,5 +7,11 @@
         "target_position": [20, 6],
         "target_orientation": "east",
         "sound": "door"
+    },
+    {
+        "type": "examine",
+        "trigger": "validation_key",
+        "position": [9, 9],
+        "text": "A big mirror."
     }
 ]

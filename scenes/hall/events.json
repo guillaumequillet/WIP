@@ -7,5 +7,17 @@
         "target_position": [8, 6],
         "target_orientation": "south",
         "sound": "door"
+    },
+    {
+        "type": "examine",
+        "trigger": "validation_key",
+        "position": [15, 4],
+        "text": "I can't get out, it's too dangerous out there."
+    },
+    {
+        "type": "examine",
+        "trigger": "validation_key",
+        "position": [14, 4],
+        "text": "I can't get out, it's too dangerous out there."
     }
 ]
