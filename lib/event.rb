@@ -1,6 +1,4 @@
 class Event
-    VALIDATION_KEY = Gosu::KB_RETURN # temp
-    
     attr_accessor :active
     def initialize(scene, type, trigger, position, size, parameters)
         @scene = scene
@@ -9,10 +7,11 @@ class Event
         @size = size
         @trigger = trigger
         @parameters = parameters
+        @keys = @scene.window.keys
     end
 
     def button_down(id)
-        process if (@trigger == 'validation_key' && id == VALIDATION_KEY && collides?(@scene.hero.sprite.x, @scene.hero.sprite.y, @scene.hero.radius))
+        process if (@trigger == 'validation_key' && @keys[:validation_key].include?(id) && collides?(@scene.hero.sprite.x, @scene.hero.sprite.y, @scene.hero.radius))
     end
 
     def collides?(px, py, r)
@@ -86,7 +85,7 @@ class TeleportEvent < Event
     def draw(hero)
         super(hero)
         if collides?(hero.sprite.x, hero.sprite.y, hero.radius)
-            draw_prompt("[#{Gosu.button_name(VALIDATION_KEY)}] Open Door", true)
+            draw_prompt("[#{Gosu.button_name(@keys[:validation_key][0])}] Open Door", true)
         end
     end
 end
@@ -134,7 +133,7 @@ class ExamineEvent < Event
         if @displaying_text
             draw_prompt(@parameters[:text].slice(0, @cursor))
         elsif collides?(hero.sprite.x, hero.sprite.y, hero.radius)
-            draw_prompt("[#{Gosu.button_name(VALIDATION_KEY)}] Examine", true)
+            draw_prompt("[#{Gosu.button_name(@keys[:validation_key][0])}] Examine", true)
         end
     end 
 end

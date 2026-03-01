@@ -8,6 +8,14 @@
     },
 
     "keys": {
-        "exit": ["Gosu::KB_ESCAPE"]
+        "exit": ["Gosu::GP_BUTTON_4", "Gosu::KB_ESCAPE"],
+        "validation_key": ["Gosu::GP_BUTTON_0", "Gosu::KB_RETURN"],
+        "up": ["Gosu::GP_UP", "Gosu::KB_W"],
+        "down": ["Gosu::GP_DOWN", "Gosu::KB_S"],
+        "right": ["Gosu::GP_RIGHT", "Gosu::KB_D"],
+        "left": ["Gosu::GP_LEFT", "Gosu::KB_A"],
+        "run": ["Gosu::GP_BUTTON_2", "Gosu::KB_LEFT_SHIFT"],
+        "cancel": ["Gosu::GP_BUTTON_3", "Gosu::KB_LEFT_CONTROL"],
+        "menu": ["Gosu::GP_BUTTON_1", "Gosu::KB_TAB"]
     }
 }

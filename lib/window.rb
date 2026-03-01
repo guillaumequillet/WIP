@@ -1,6 +1,7 @@
 require 'json'
 
 class Window < Gosu::Window
+    attr_reader :keys
     def initialize
         load_config_file
         super(@width, @height, @fullscreen)
@@ -18,9 +19,10 @@ class Window < Gosu::Window
         @fullscreen = config_data['window']['fullscreen']
         @needs_cursor = config_data['window']['mouse_cursor']
 
-        @keys = {
-            exit: config_data['keys']['exit'].map {|e| eval(e)}
-        }
+        @keys = {}
+        config_data['keys'].each do |action, keys|
+            @keys[action.to_sym] = keys.map {|e| eval(e)}
+        end
     end
 
     def button_down(id)

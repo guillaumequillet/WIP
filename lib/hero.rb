@@ -3,7 +3,8 @@ class Hero
     def initialize(scene, spritesheet, x, y, z = 0, orientation = :north)
         @scene = scene
         @sprite = Sprite.new(spritesheet, x, y, 0, 3)
-        @speed = 0.005
+        @speed = 0.003
+        @run_speed = @speed * 2.0
         @angle = 0
         @radius = 0.25
         @walk, @rows = [1, 0, 1, 2], { dos: 0, droite: 1, face: 2, gauche: 3 }
@@ -13,6 +14,8 @@ class Hero
         @sfx = {
             walk: [Gosu::Sample.new('sfx/step_1.mp3'), Gosu::Sample.new('sfx/step_2.mp3'), Gosu::Sample.new('sfx/step_3.mp3'), Gosu::Sample.new('sfx/step_4.mp3')]
         }
+
+        @keys = @scene.window.keys
 
         orient(orientation)
     end
@@ -29,7 +32,7 @@ class Hero
 
     def update(dt, camera)
         unless @scene.should_freeze_inputs?
-            l, r, u, d = Gosu.button_down?(Gosu::KB_LEFT), Gosu.button_down?(Gosu::KB_RIGHT), Gosu.button_down?(Gosu::KB_UP), Gosu.button_down?(Gosu::KB_DOWN)
+            l, r, u, d = @keys[:left].any? {|k| Gosu.button_down?(k)}, @keys[:right].any? {|k| Gosu.button_down?(k)}, @keys[:up].any? {|k| Gosu.button_down?(k)}, @keys[:down].any? {|k| Gosu.button_down?(k)}
 
             dx_screen = (r ? 1 : 0) - (l ? 1 : 0)
             dy_screen = (u ? 1 : 0) - (d ? 1 : 0)
@@ -38,8 +41,11 @@ class Hero
             if @moving
                 input_angle = Math.atan2(dy_screen, dx_screen)
                 @angle = camera.yaw + input_angle - Math::PI / 2.0
-                mv_x = Math.cos(@angle) * @speed * dt
-                mv_y = Math.sin(@angle) * @speed * dt
+
+                speed = @keys[:run].any? {|k| Gosu.button_down?(k)} ? @run_speed : @speed
+
+                mv_x = Math.cos(@angle) * speed * dt
+                mv_y = Math.sin(@angle) * speed * dt
 
                 collisions = @scene.blocks
                 @sprite.x += mv_x unless collisions.any? { |b| hit?(b, @sprite.x + mv_x, @sprite.y, @radius) }
@@ -77,7 +83,8 @@ class Hero
     end
 
     def draw(camera)
-        frame = @moving ? @walk[(Gosu.milliseconds / 160) % 4] : 1
+        delay = @keys[:run].any? {|k| Gosu.button_down?(k)} ? 150 : 200
+        frame = @moving ? @walk[(Gosu.milliseconds / delay) % 4] : 1
 
         # if we're moving and changing foot
         if frame != 1 && frame != @frame
