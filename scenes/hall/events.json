@@ -2,7 +2,8 @@
     {
         "type": "teleport",
         "trigger": "validation_key",
-        "position": [20, 6],
+        "position": [20, 5],
+        "size": [1, 2],
         "target_map": "vestiaire",
         "target_position": [8, 6],
         "target_orientation": "south",
@@ -11,8 +12,8 @@
     {
         "type": "examine",
         "trigger": "validation_key",
-        "position": [14, 4],
-        "size": [2, 1],
+        "position": [13, 4],
+        "size": [4, 1],
         "text": "I can't get out, it's too dangerous out there."
     },
     {

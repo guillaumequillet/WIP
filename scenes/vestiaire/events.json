@@ -2,7 +2,8 @@
     {
         "type": "teleport",
         "trigger": "validation_key",
-        "position": [8, 5],
+        "position": [7, 5],
+        "size": [2, 1],
         "target_map": "hall",
         "target_position": [20, 6],
         "target_orientation": "east",
